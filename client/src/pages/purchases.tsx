@@ -29,9 +29,9 @@ import {
 import { Label } from "@/components/ui/label";
 
 const mockPurchases = [
-  { id: "1", farmer: "Ram Singh", crop: "Wheat", quantity: "500", rate: "25", total: "₹12,500", date: "2024-10-27", status: "paid" },
-  { id: "2", farmer: "Mohan Kumar", crop: "Rice", quantity: "300", rate: "35", total: "₹10,500", date: "2024-10-26", status: "pending" },
-  { id: "3", farmer: "Vijay Sharma", crop: "Bajra", quantity: "400", rate: "22", total: "₹8,800", date: "2024-10-25", status: "paid" },
+  { id: "1", farmer: "Ram Singh", crop: "Wheat", quantity: "500", rate: "25", total: "Rs 12,500", date: "2024-10-27", status: "paid" },
+  { id: "2", farmer: "Mohan Kumar", crop: "Rice", quantity: "300", rate: "35", total: "Rs 10,500", date: "2024-10-26", status: "pending" },
+  { id: "3", farmer: "Vijay Sharma", crop: "Bajra", quantity: "400", rate: "22", total: "Rs 8,800", date: "2024-10-25", status: "paid" },
 ];
 
 export default function Purchases() {
@@ -45,7 +45,7 @@ export default function Purchases() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 animate-fade-in-up">
         <h1 className="text-3xl font-bold" data-testid="text-page-title">Purchases</h1>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
@@ -81,7 +81,7 @@ export default function Purchases() {
                 <Input id="quantity" type="number" placeholder="500" className="rounded-2xl" data-testid="input-quantity" />
               </div>
               <div>
-                <Label htmlFor="rate">Rate per kg (₹)</Label>
+                <Label htmlFor="rate">Rate per kg (Rs)</Label>
                 <Input id="rate" type="number" placeholder="25" className="rounded-2xl" data-testid="input-rate" />
               </div>
               <div>
@@ -126,7 +126,7 @@ export default function Purchases() {
                 <TableCell className="font-medium">{purchase.farmer}</TableCell>
                 <TableCell>{purchase.crop}</TableCell>
                 <TableCell>{purchase.quantity}</TableCell>
-                <TableCell>₹{purchase.rate}</TableCell>
+                <TableCell>Rs {purchase.rate}</TableCell>
                 <TableCell className="font-medium">{purchase.total}</TableCell>
                 <TableCell>{new Date(purchase.date).toLocaleDateString("en-IN")}</TableCell>
                 <TableCell>

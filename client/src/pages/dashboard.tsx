@@ -14,15 +14,15 @@ export default function Dashboard() {
   });
 
   const recentActivities = [
-    { id: 1, text: "Received ₹10,000 from Factory A", time: "2h ago", type: "payment" },
+    { id: 1, text: "Received Rs 10,000 from Factory A", time: "2h ago", type: "payment" },
     { id: 2, text: "Added purchase from Ram Singh - 500kg Wheat", time: "5h ago", type: "purchase" },
-    { id: 3, text: "Created invoice #INV-001 for ₹25,000", time: "1d ago", type: "invoice" },
+    { id: 3, text: "Created invoice #INV-001 for Rs 25,000", time: "1d ago", type: "invoice" },
     { id: 4, text: "New farmer added: Mohan Kumar", time: "2d ago", type: "farmer" },
   ];
 
   return (
     <div className="space-y-6">
-      <div>
+      <div className="animate-fade-in-up">
         <h1 className="text-3xl font-bold" data-testid="text-welcome">Welcome back, Arhti</h1>
         <p className="text-muted-foreground mt-1">{currentDate}</p>
       </div>
@@ -36,19 +36,19 @@ export default function Dashboard() {
         />
         <StatCard
           title="Pending Payments"
-          value="₹1,24,500"
+          value="Rs 1,24,500"
           icon={AlertCircle}
           trend={{ value: "8%", positive: false }}
         />
         <StatCard
           title="Total Commission"
-          value="₹45,230"
+          value="Rs 45,230"
           icon={DollarSign}
           trend={{ value: "15%", positive: true }}
         />
         <StatCard
           title="Charges Today"
-          value="₹3,200"
+          value="Rs 3,200"
           icon={Receipt}
         />
       </div>
@@ -103,9 +103,9 @@ export default function Dashboard() {
         <CardContent>
           <div className="space-y-4">
             {[
-              { name: "Ram Singh", crop: "Wheat", amount: "₹45,000" },
-              { name: "Mohan Kumar", crop: "Rice", amount: "₹38,500" },
-              { name: "Vijay Sharma", crop: "Bajra", amount: "₹32,000" },
+              { name: "Ram Singh", crop: "Wheat", amount: "Rs 45,000" },
+              { name: "Mohan Kumar", crop: "Rice", amount: "Rs 38,500" },
+              { name: "Vijay Sharma", crop: "Bajra", amount: "Rs 32,000" },
             ].map((farmer, idx) => (
               <div key={idx} className="flex items-center justify-between" data-testid={`farmer-${idx}`}>
                 <div className="flex items-center gap-3">

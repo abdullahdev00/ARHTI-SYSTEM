@@ -23,10 +23,10 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 
 const mockFarmers = [
-  { id: "1", name: "Ram Singh", phone: "+91 98765 43210", crop: "Wheat", totalAmount: "₹45,000", status: "active", lastDeal: "2 days ago" },
-  { id: "2", name: "Mohan Kumar", phone: "+91 98765 43211", crop: "Rice", totalAmount: "₹38,500", status: "active", lastDeal: "5 days ago" },
-  { id: "3", name: "Vijay Sharma", phone: "+91 98765 43212", crop: "Bajra", totalAmount: "₹32,000", status: "active", lastDeal: "1 week ago" },
-  { id: "4", name: "Suresh Patel", phone: "+91 98765 43213", crop: "Cotton", totalAmount: "₹28,000", status: "inactive", lastDeal: "3 weeks ago" },
+  { id: "1", name: "Ram Singh", phone: "+92 300 1234567", crop: "Wheat", totalAmount: "Rs 45,000", status: "active", lastDeal: "2 days ago" },
+  { id: "2", name: "Mohan Kumar", phone: "+92 300 1234568", crop: "Rice", totalAmount: "Rs 38,500", status: "active", lastDeal: "5 days ago" },
+  { id: "3", name: "Vijay Sharma", phone: "+92 300 1234569", crop: "Bajra", totalAmount: "Rs 32,000", status: "active", lastDeal: "1 week ago" },
+  { id: "4", name: "Suresh Patel", phone: "+92 300 1234570", crop: "Cotton", totalAmount: "Rs 28,000", status: "inactive", lastDeal: "3 weeks ago" },
 ];
 
 export default function Farmers() {
@@ -41,7 +41,7 @@ export default function Farmers() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 animate-fade-in-up">
         <h1 className="text-3xl font-bold" data-testid="text-page-title">Farmers</h1>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
@@ -61,7 +61,7 @@ export default function Farmers() {
               </div>
               <div>
                 <Label htmlFor="phone">Phone Number</Label>
-                <Input id="phone" placeholder="+91 98765 43210" className="rounded-2xl" data-testid="input-farmer-phone" />
+                <Input id="phone" placeholder="+92 300 1234567" className="rounded-2xl" data-testid="input-farmer-phone" />
               </div>
               <div>
                 <Label htmlFor="address">Address</Label>
@@ -122,7 +122,7 @@ export default function Farmers() {
             <Card key={farmer.id} className="rounded-2xl hover-elevate" data-testid={`card-farmer-${farmer.id}`}>
               <CardHeader>
                 <div className="flex items-start justify-between">
-                  <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
+                  <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center transition-all duration-300 hover:bg-primary/20 hover:scale-110">
                     <span className="text-lg font-medium text-primary">
                       {farmer.name.split(" ").map(n => n[0]).join("")}
                     </span>

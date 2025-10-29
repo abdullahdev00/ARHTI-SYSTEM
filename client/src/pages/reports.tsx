@@ -5,7 +5,7 @@ import { Download } from "lucide-react";
 export default function Reports() {
   return (
     <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 animate-fade-in-up">
         <h1 className="text-3xl font-bold" data-testid="text-page-title">Reports</h1>
         <div className="flex gap-2">
           <Button variant="outline" className="rounded-2xl" data-testid="button-export-pdf">
@@ -27,19 +27,19 @@ export default function Reports() {
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
             <div className="p-4 bg-muted rounded-2xl">
               <p className="text-sm text-muted-foreground">Total Purchases</p>
-              <p className="text-2xl font-bold mt-1">₹2,45,000</p>
+              <p className="text-2xl font-bold mt-1">Rs 2,45,000</p>
             </div>
             <div className="p-4 bg-muted rounded-2xl">
               <p className="text-sm text-muted-foreground">Total Commission</p>
-              <p className="text-2xl font-bold mt-1">₹12,250</p>
+              <p className="text-2xl font-bold mt-1">Rs 12,250</p>
             </div>
             <div className="p-4 bg-muted rounded-2xl">
               <p className="text-sm text-muted-foreground">Total Charges</p>
-              <p className="text-2xl font-bold mt-1">₹8,500</p>
+              <p className="text-2xl font-bold mt-1">Rs 8,500</p>
             </div>
             <div className="p-4 bg-muted rounded-2xl">
               <p className="text-sm text-muted-foreground">Net Profit</p>
-              <p className="text-2xl font-bold mt-1 text-primary">₹3,750</p>
+              <p className="text-2xl font-bold mt-1 text-primary">Rs 3,750</p>
             </div>
           </div>
         </CardContent>
@@ -53,10 +53,10 @@ export default function Reports() {
           <CardContent>
             <div className="space-y-4">
               {[
-                { crop: "Wheat", amount: "₹85,000", percentage: 35 },
-                { crop: "Rice", amount: "₹65,000", percentage: 27 },
-                { crop: "Bajra", amount: "₹55,000", percentage: 22 },
-                { crop: "Cotton", amount: "₹40,000", percentage: 16 },
+                { crop: "Wheat", amount: "Rs 85,000", percentage: 35 },
+                { crop: "Rice", amount: "Rs 65,000", percentage: 27 },
+                { crop: "Bajra", amount: "Rs 55,000", percentage: 22 },
+                { crop: "Cotton", amount: "Rs 40,000", percentage: 16 },
               ].map((item, idx) => (
                 <div key={idx} className="space-y-2">
                   <div className="flex justify-between text-sm">
@@ -82,9 +82,9 @@ export default function Reports() {
           <CardContent>
             <div className="space-y-4">
               {[
-                { type: "Labor", amount: "₹4,200", percentage: 50 },
-                { type: "Transport", amount: "₹2,800", percentage: 33 },
-                { type: "Miscellaneous", amount: "₹1,500", percentage: 17 },
+                { type: "Labor", amount: "Rs 4,200", percentage: 50 },
+                { type: "Transport", amount: "Rs 2,800", percentage: 33 },
+                { type: "Miscellaneous", amount: "Rs 1,500", percentage: 17 },
               ].map((item, idx) => (
                 <div key={idx} className="space-y-2">
                   <div className="flex justify-between text-sm">

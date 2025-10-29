@@ -30,9 +30,9 @@ import { Label } from "@/components/ui/label";
 import { StatCard } from "@/components/stat-card";
 
 const mockPayments = [
-  { id: "1", name: "Factory A", invoice: "INV-001", amount: "₹12,500", type: "incoming", status: "completed", date: "2024-10-27" },
-  { id: "2", name: "Ram Singh", invoice: "INV-001", amount: "₹11,875", type: "outgoing", status: "completed", date: "2024-10-27" },
-  { id: "3", name: "Factory B", invoice: "INV-002", amount: "₹10,500", type: "incoming", status: "pending", date: "2024-10-26" },
+  { id: "1", name: "Factory A", invoice: "INV-001", amount: "Rs 12,500", type: "incoming", status: "completed", date: "2024-10-27" },
+  { id: "2", name: "Ram Singh", invoice: "INV-001", amount: "Rs 11,875", type: "outgoing", status: "completed", date: "2024-10-27" },
+  { id: "3", name: "Factory B", invoice: "INV-002", amount: "Rs 10,500", type: "incoming", status: "pending", date: "2024-10-26" },
 ];
 
 export default function Payments() {
@@ -44,13 +44,13 @@ export default function Payments() {
     payment.invoice.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const receivedFromFactory = "₹2,45,000";
-  const paidToFarmers = "₹2,15,500";
-  const pendingAmount = "₹29,500";
+  const receivedFromFactory = "Rs 2,45,000";
+  const paidToFarmers = "Rs 2,15,500";
+  const pendingAmount = "Rs 29,500";
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 animate-fade-in-up">
         <h1 className="text-3xl font-bold" data-testid="text-page-title">Payments</h1>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
@@ -81,7 +81,7 @@ export default function Payments() {
                 <Input id="name" placeholder="Factory or Farmer name" className="rounded-2xl" data-testid="input-payment-name" />
               </div>
               <div>
-                <Label htmlFor="amount">Amount (₹)</Label>
+                <Label htmlFor="amount">Amount (Rs)</Label>
                 <Input id="amount" type="number" placeholder="10000" className="rounded-2xl" data-testid="input-payment-amount" />
               </div>
               <div>

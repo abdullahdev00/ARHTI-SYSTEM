@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Plus, Search, Eye } from "lucide-react";
+import { Link } from "wouter";
 import {
   Dialog,
   DialogContent,
@@ -21,9 +22,9 @@ import {
 } from "@/components/ui/table";
 
 const mockInvoices = [
-  { id: "INV-001", farmer: "Ram Singh", date: "2024-10-27", total: "₹12,500", commission: "₹625", netPayable: "₹11,875", status: "paid" },
-  { id: "INV-002", farmer: "Mohan Kumar", date: "2024-10-26", total: "₹10,500", commission: "₹525", netPayable: "₹9,975", status: "unpaid" },
-  { id: "INV-003", farmer: "Vijay Sharma", date: "2024-10-25", total: "₹8,800", commission: "₹440", netPayable: "₹8,360", status: "paid" },
+  { id: "INV-001", farmer: "Ram Singh", date: "2024-10-27", total: "Rs 12,500", commission: "Rs 625", netPayable: "Rs 11,875", status: "paid" },
+  { id: "INV-002", farmer: "Mohan Kumar", date: "2024-10-26", total: "Rs 10,500", commission: "Rs 525", netPayable: "Rs 9,975", status: "unpaid" },
+  { id: "INV-003", farmer: "Vijay Sharma", date: "2024-10-25", total: "Rs 8,800", commission: "Rs 440", netPayable: "Rs 8,360", status: "paid" },
 ];
 
 export default function Invoices() {
@@ -37,7 +38,7 @@ export default function Invoices() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 animate-fade-in-up">
         <h1 className="text-3xl font-bold" data-testid="text-page-title">Invoices</h1>
         <Button className="rounded-2xl" data-testid="button-create-invoice">
           <Plus className="mr-2 h-4 w-4" />
@@ -88,67 +89,16 @@ export default function Invoices() {
                   </Badge>
                 </TableCell>
                 <TableCell>
-                  <Dialog>
-                    <DialogTrigger asChild>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="rounded-2xl"
-                        onClick={() => setSelectedInvoice(invoice)}
-                        data-testid={`button-view-${invoice.id}`}
-                      >
-                        <Eye className="h-4 w-4" />
-                      </Button>
-                    </DialogTrigger>
-                    <DialogContent className="rounded-2xl">
-                      <DialogHeader>
-                        <DialogTitle>Invoice Details</DialogTitle>
-                      </DialogHeader>
-                      {selectedInvoice && (
-                        <div className="space-y-4">
-                          <div className="grid grid-cols-2 gap-4">
-                            <div>
-                              <p className="text-sm text-muted-foreground">Invoice ID</p>
-                              <p className="font-medium">{selectedInvoice.id}</p>
-                            </div>
-                            <div>
-                              <p className="text-sm text-muted-foreground">Farmer</p>
-                              <p className="font-medium">{selectedInvoice.farmer}</p>
-                            </div>
-                            <div>
-                              <p className="text-sm text-muted-foreground">Date</p>
-                              <p className="font-medium">{new Date(selectedInvoice.date).toLocaleDateString("en-IN")}</p>
-                            </div>
-                            <div>
-                              <p className="text-sm text-muted-foreground">Status</p>
-                              <Badge variant={selectedInvoice.status === "paid" ? "default" : "secondary"} className="rounded-2xl">
-                                {selectedInvoice.status}
-                              </Badge>
-                            </div>
-                          </div>
-                          <div className="border-t pt-4 space-y-2">
-                            <div className="flex justify-between">
-                              <span className="text-muted-foreground">Total Amount:</span>
-                              <span className="font-medium">{selectedInvoice.total}</span>
-                            </div>
-                            <div className="flex justify-between">
-                              <span className="text-muted-foreground">Commission (5%):</span>
-                              <span className="font-medium">-{selectedInvoice.commission}</span>
-                            </div>
-                            <div className="flex justify-between text-lg font-bold border-t pt-2">
-                              <span>Net Payable:</span>
-                              <span>{selectedInvoice.netPayable}</span>
-                            </div>
-                          </div>
-                          {selectedInvoice.status === "unpaid" && (
-                            <Button className="w-full rounded-2xl" data-testid="button-mark-paid">
-                              Mark as Paid
-                            </Button>
-                          )}
-                        </div>
-                      )}
-                    </DialogContent>
-                  </Dialog>
+                  <Link href={`/invoices/${invoice.id}`}>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="rounded-2xl"
+                      data-testid={`button-view-${invoice.id}`}
+                    >
+                      <Eye className="h-4 w-4" />
+                    </Button>
+                  </Link>
                 </TableCell>
               </TableRow>
             ))}

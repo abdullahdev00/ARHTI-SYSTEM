@@ -20,7 +20,7 @@ export default function Settings() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-3xl font-bold" data-testid="text-page-title">Settings</h1>
+      <h1 className="text-3xl font-bold animate-fade-in-up" data-testid="text-page-title">Settings</h1>
 
       <Card className="rounded-2xl">
         <CardHeader>

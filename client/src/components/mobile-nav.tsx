@@ -29,8 +29,8 @@ export function MobileNav() {
   const [location] = useLocation();
 
   return (
-    <div className="fixed bottom-4 left-4 right-4 z-50 md:hidden">
-      <nav className="bg-card border border-card-border rounded-2xl shadow-lg backdrop-blur-lg p-2">
+    <div className="fixed bottom-4 left-4 right-4 z-50 md:hidden animate-fade-in-up">
+      <nav className="bg-card/95 border border-card-border rounded-2xl shadow-xl backdrop-blur-lg p-2">
         <div className="flex items-center justify-around gap-1">
           {mainNavItems.map((item) => (
             <Link key={item.title} href={item.url}>

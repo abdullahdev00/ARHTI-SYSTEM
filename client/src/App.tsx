@@ -12,6 +12,7 @@ import Dashboard from "@/pages/dashboard";
 import Farmers from "@/pages/farmers";
 import Purchases from "@/pages/purchases";
 import Invoices from "@/pages/invoices";
+import InvoicePreview from "@/pages/invoice-preview";
 import Payments from "@/pages/payments";
 import Charges from "@/pages/charges";
 import Reports from "@/pages/reports";
@@ -23,6 +24,7 @@ function Router() {
       <Route path="/" component={Dashboard} />
       <Route path="/farmers" component={Farmers} />
       <Route path="/purchases" component={Purchases} />
+      <Route path="/invoices/:id" component={InvoicePreview} />
       <Route path="/invoices" component={Invoices} />
       <Route path="/payments" component={Payments} />
       <Route path="/charges" component={Charges} />
@@ -43,18 +45,18 @@ function App() {
       <ThemeProvider defaultTheme="system" storageKey="arhti-ui-theme">
         <TooltipProvider>
           <SidebarProvider style={style as React.CSSProperties}>
-            <div className="flex h-screen w-full">
+            <div className="flex h-screen w-full overflow-hidden">
               <AppSidebar />
-              <div className="flex flex-col flex-1">
-                <header className="hidden md:flex items-center justify-between p-4 border-b">
+              <div className="flex flex-col flex-1 overflow-hidden">
+                <header className="hidden md:flex items-center justify-between px-6 py-4 border-b shrink-0">
                   <SidebarTrigger data-testid="button-sidebar-toggle" />
                   <ThemeToggle />
                 </header>
-                <header className="flex md:hidden items-center justify-between p-4 border-b">
+                <header className="flex md:hidden items-center justify-between px-4 py-4 border-b shrink-0">
                   <h2 className="text-lg font-semibold">Arhti Business</h2>
                   <ThemeToggle />
                 </header>
-                <main className="flex-1 overflow-auto p-4 md:p-6 pb-20 md:pb-6">
+                <main className="flex-1 overflow-auto px-4 md:px-6 py-6 pb-20 md:pb-6">
                   <div className="max-w-7xl mx-auto">
                     <Router />
                   </div>

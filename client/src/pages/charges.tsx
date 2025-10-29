@@ -30,9 +30,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 
 const mockCharges = [
-  { id: "1", title: "Labor Cost", amount: "₹2,000", type: "Labor", date: "2024-10-27", appliedTo: "Purchase #12" },
-  { id: "2", title: "Transport Fee", amount: "₹1,500", type: "Transport", date: "2024-10-26", appliedTo: "Purchase #11" },
-  { id: "3", title: "Mandi Tax", amount: "₹800", type: "Misc", date: "2024-10-25", appliedTo: "Batch #5" },
+  { id: "1", title: "Labor Cost", amount: "Rs 2,000", type: "Labor", date: "2024-10-27", appliedTo: "Purchase #12" },
+  { id: "2", title: "Transport Fee", amount: "Rs 1,500", type: "Transport", date: "2024-10-26", appliedTo: "Purchase #11" },
+  { id: "3", title: "Mandi Tax", amount: "Rs 800", type: "Misc", date: "2024-10-25", appliedTo: "Batch #5" },
 ];
 
 export default function Charges() {
@@ -46,7 +46,7 @@ export default function Charges() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 animate-fade-in-up">
         <h1 className="text-3xl font-bold" data-testid="text-page-title">Charges</h1>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
@@ -65,7 +65,7 @@ export default function Charges() {
                 <Input id="title" placeholder="e.g., Labor Cost" className="rounded-2xl" data-testid="input-charge-title" />
               </div>
               <div>
-                <Label htmlFor="amount">Amount (₹)</Label>
+                <Label htmlFor="amount">Amount (Rs)</Label>
                 <Input id="amount" type="number" placeholder="1000" className="rounded-2xl" data-testid="input-charge-amount" />
               </div>
               <div>
