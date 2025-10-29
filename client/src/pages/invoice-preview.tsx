@@ -143,7 +143,7 @@ export default function InvoicePreview() {
                         <td className="p-4 text-right">{item.quantity.toLocaleString()}</td>
                         <td className="p-4 text-right">{item.rate.toLocaleString()}</td>
                         <td className="p-4 text-right font-medium">
-                          PKR {item.total.toLocaleString()}
+                          Rs {item.total.toLocaleString()}
                         </td>
                       </tr>
                     ))}
@@ -156,24 +156,24 @@ export default function InvoicePreview() {
               <div className="w-full md:w-80 space-y-3">
                 <div className="flex justify-between text-sm">
                   <span className="text-muted-foreground">Subtotal:</span>
-                  <span className="font-medium">PKR {invoice.subtotal.toLocaleString()}</span>
+                  <span className="font-medium">Rs {invoice.subtotal.toLocaleString()}</span>
                 </div>
                 <div className="flex justify-between text-sm">
                   <span className="text-muted-foreground">Commission (5%):</span>
                   <span className="font-medium text-red-600 dark:text-red-400">
-                    -PKR {invoice.commission.toLocaleString()}
+                    -Rs {invoice.commission.toLocaleString()}
                   </span>
                 </div>
                 <div className="flex justify-between text-sm">
                   <span className="text-muted-foreground">Charges:</span>
                   <span className="font-medium text-red-600 dark:text-red-400">
-                    -PKR {invoice.charges.toLocaleString()}
+                    -Rs {invoice.charges.toLocaleString()}
                   </span>
                 </div>
                 <div className="border-t pt-3 flex justify-between items-center">
                   <span className="text-lg font-bold">Net Payable:</span>
                   <span className="text-2xl font-bold text-primary">
-                    PKR {invoice.netPayable.toLocaleString()}
+                    Rs {invoice.netPayable.toLocaleString()}
                   </span>
                 </div>
                 <div className="flex justify-end">

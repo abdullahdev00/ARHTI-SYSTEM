@@ -4,6 +4,7 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { ThemeProvider } from "@/lib/theme-provider";
+import { ViewModeProvider } from "@/hooks/use-view-mode";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
 import { ThemeToggle } from "@/components/theme-toggle";
@@ -17,6 +18,7 @@ import Payments from "@/pages/payments";
 import Charges from "@/pages/charges";
 import Reports from "@/pages/reports";
 import Settings from "@/pages/settings";
+import NotFound from "@/pages/not-found";
 
 function Router() {
   return (
@@ -30,6 +32,7 @@ function Router() {
       <Route path="/charges" component={Charges} />
       <Route path="/reports" component={Reports} />
       <Route path="/settings" component={Settings} />
+      <Route component={NotFound} />
     </Switch>
   );
 }
@@ -43,8 +46,9 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider defaultTheme="system" storageKey="arhti-ui-theme">
-        <TooltipProvider>
-          <SidebarProvider style={style as React.CSSProperties}>
+        <ViewModeProvider>
+          <TooltipProvider>
+            <SidebarProvider style={style as React.CSSProperties}>
             <div className="flex h-screen w-full overflow-hidden">
               <AppSidebar />
               <div className="flex flex-col flex-1 overflow-hidden">
@@ -60,17 +64,18 @@ function App() {
                   <h2 className="text-lg font-semibold">Arhti Business</h2>
                   <ThemeToggle />
                 </header>
-                <main className="flex-1 overflow-auto px-4 md:px-6 py-6 pb-20 md:pb-6">
+                <main className="flex-1 overflow-auto px-4 md:px-6 py-6 pb-28 md:pb-6">
                   <div className="max-w-7xl mx-auto">
                     <Router />
                   </div>
                 </main>
               </div>
             </div>
-            <MobileNav />
-          </SidebarProvider>
-          <Toaster />
-        </TooltipProvider>
+              <MobileNav />
+            </SidebarProvider>
+            <Toaster />
+          </TooltipProvider>
+        </ViewModeProvider>
       </ThemeProvider>
     </QueryClientProvider>
   );

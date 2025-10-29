@@ -3,7 +3,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Plus, Search, LayoutGrid, List } from "lucide-react";
+import { Plus, Search } from "lucide-react";
+import { useViewMode } from "@/hooks/use-view-mode";
+import { ViewToggle } from "@/components/view-toggle";
 import {
   Dialog,
   DialogContent,
@@ -23,14 +25,14 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 
 const mockFarmers = [
-  { id: "1", name: "Ram Singh", phone: "03001234567", crop: "Wheat", totalAmount: "PKR 45,000", status: "active", lastDeal: "2 days ago" },
-  { id: "2", name: "Mohan Kumar", phone: "03001234568", crop: "Rice", totalAmount: "PKR 38,500", status: "active", lastDeal: "5 days ago" },
-  { id: "3", name: "Vijay Sharma", phone: "03001234569", crop: "Bajra", totalAmount: "PKR 32,000", status: "active", lastDeal: "1 week ago" },
-  { id: "4", name: "Suresh Patel", phone: "03001234570", crop: "Cotton", totalAmount: "PKR 28,000", status: "inactive", lastDeal: "3 weeks ago" },
+  { id: "1", name: "Ram Singh", phone: "03001234567", crop: "Wheat", totalAmount: "Rs 45,000", status: "active", lastDeal: "2 days ago" },
+  { id: "2", name: "Mohan Kumar", phone: "03001234568", crop: "Rice", totalAmount: "Rs 38,500", status: "active", lastDeal: "5 days ago" },
+  { id: "3", name: "Vijay Sharma", phone: "03001234569", crop: "Bajra", totalAmount: "Rs 32,000", status: "active", lastDeal: "1 week ago" },
+  { id: "4", name: "Suresh Patel", phone: "03001234570", crop: "Cotton", totalAmount: "Rs 28,000", status: "inactive", lastDeal: "3 weeks ago" },
 ];
 
 export default function Farmers() {
-  const [viewMode, setViewMode] = useState<"grid" | "table">("grid");
+  const { viewMode } = useViewMode();
   const [searchQuery, setSearchQuery] = useState("");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
@@ -94,26 +96,7 @@ export default function Farmers() {
             data-testid="input-search-farmers"
           />
         </div>
-        <div className="flex gap-2 shrink-0">
-          <Button
-            variant={viewMode === "grid" ? "default" : "outline"}
-            size="icon"
-            onClick={() => setViewMode("grid")}
-            className="rounded-2xl"
-            data-testid="button-view-grid"
-          >
-            <LayoutGrid className="h-4 w-4" />
-          </Button>
-          <Button
-            variant={viewMode === "table" ? "default" : "outline"}
-            size="icon"
-            onClick={() => setViewMode("table")}
-            className="rounded-2xl"
-            data-testid="button-view-table"
-          >
-            <List className="h-4 w-4" />
-          </Button>
-        </div>
+        <ViewToggle />
       </div>
 
       {viewMode === "grid" ? (

@@ -94,7 +94,7 @@ export default function Settings() {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent className="rounded-2xl">
-                  <SelectItem value="pkr">PKR (Rs)</SelectItem>
+                  <SelectItem value="pkr">Rs (Rs)</SelectItem>
                   <SelectItem value="usd">USD ($)</SelectItem>
                 </SelectContent>
               </Select>

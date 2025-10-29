@@ -22,9 +22,9 @@ import {
 } from "@/components/ui/table";
 
 const mockInvoices = [
-  { id: "INV-001", farmer: "Ram Singh", date: "2024-10-27", total: "PKR 12,500", commission: "PKR 625", netPayable: "PKR 11,875", status: "paid" },
-  { id: "INV-002", farmer: "Mohan Kumar", date: "2024-10-26", total: "PKR 10,500", commission: "PKR 525", netPayable: "PKR 9,975", status: "unpaid" },
-  { id: "INV-003", farmer: "Vijay Sharma", date: "2024-10-25", total: "PKR 8,800", commission: "PKR 440", netPayable: "PKR 8,360", status: "paid" },
+  { id: "INV-001", farmer: "Ram Singh", date: "2024-10-27", total: "Rs 12,500", commission: "Rs 625", netPayable: "Rs 11,875", status: "paid" },
+  { id: "INV-002", farmer: "Mohan Kumar", date: "2024-10-26", total: "Rs 10,500", commission: "Rs 525", netPayable: "Rs 9,975", status: "unpaid" },
+  { id: "INV-003", farmer: "Vijay Sharma", date: "2024-10-25", total: "Rs 8,800", commission: "Rs 440", netPayable: "Rs 8,360", status: "paid" },
 ];
 
 export default function Invoices() {

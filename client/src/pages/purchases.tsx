@@ -3,7 +3,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Plus, Search, LayoutGrid, List, ShoppingCart } from "lucide-react";
+import { Plus, Search, ShoppingCart } from "lucide-react";
+import { useViewMode } from "@/hooks/use-view-mode";
+import { ViewToggle } from "@/components/view-toggle";
 import {
   Dialog,
   DialogContent,
@@ -29,13 +31,13 @@ import {
 import { Label } from "@/components/ui/label";
 
 const mockPurchases = [
-  { id: "1", farmer: "Ram Singh", crop: "Wheat", quantity: "500", rate: "25", total: "PKR 12,500", date: "2024-10-27", status: "paid" },
-  { id: "2", farmer: "Mohan Kumar", crop: "Rice", quantity: "300", rate: "35", total: "PKR 10,500", date: "2024-10-26", status: "pending" },
-  { id: "3", farmer: "Vijay Sharma", crop: "Bajra", quantity: "400", rate: "22", total: "PKR 8,800", date: "2024-10-25", status: "paid" },
+  { id: "1", farmer: "Ram Singh", crop: "Wheat", quantity: "500", rate: "25", total: "12,500", date: "2024-10-27", status: "paid" },
+  { id: "2", farmer: "Mohan Kumar", crop: "Rice", quantity: "300", rate: "35", total: "10,500", date: "2024-10-26", status: "pending" },
+  { id: "3", farmer: "Vijay Sharma", crop: "Bajra", quantity: "400", rate: "22", total: "8,800", date: "2024-10-25", status: "paid" },
 ];
 
 export default function Purchases() {
-  const [viewMode, setViewMode] = useState<"grid" | "table">("grid");
+  const { viewMode } = useViewMode();
   const [searchQuery, setSearchQuery] = useState("");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
@@ -82,7 +84,7 @@ export default function Purchases() {
                 <Input id="quantity" type="number" placeholder="500" className="rounded-2xl" data-testid="input-quantity" />
               </div>
               <div>
-                <Label htmlFor="rate">Rate per kg (PKR)</Label>
+                <Label htmlFor="rate">Rate per kg (Rs)</Label>
                 <Input id="rate" type="number" placeholder="25" className="rounded-2xl" data-testid="input-rate" />
               </div>
               <div>
@@ -108,26 +110,7 @@ export default function Purchases() {
             data-testid="input-search-purchases"
           />
         </div>
-        <div className="flex gap-2 shrink-0">
-          <Button
-            variant={viewMode === "grid" ? "default" : "outline"}
-            size="icon"
-            onClick={() => setViewMode("grid")}
-            className="rounded-2xl"
-            data-testid="button-view-grid"
-          >
-            <LayoutGrid className="h-4 w-4" />
-          </Button>
-          <Button
-            variant={viewMode === "table" ? "default" : "outline"}
-            size="icon"
-            onClick={() => setViewMode("table")}
-            className="rounded-2xl"
-            data-testid="button-view-table"
-          >
-            <List className="h-4 w-4" />
-          </Button>
-        </div>
+        <ViewToggle />
       </div>
 
       {viewMode === "grid" ? (
@@ -160,11 +143,11 @@ export default function Purchases() {
                   </div>
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Rate/kg:</span>
-                    <span className="font-medium">PKR {purchase.rate}</span>
+                    <span className="font-medium">Rs {purchase.rate}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Total:</span>
-                    <span className="font-medium">{purchase.total}</span>
+                    <span className="font-medium">Rs {purchase.total}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Date:</span>
@@ -195,8 +178,8 @@ export default function Purchases() {
                   <TableCell className="font-medium">{purchase.farmer}</TableCell>
                   <TableCell>{purchase.crop}</TableCell>
                   <TableCell>{purchase.quantity}</TableCell>
-                  <TableCell>PKR {purchase.rate}</TableCell>
-                  <TableCell className="font-medium">{purchase.total}</TableCell>
+                  <TableCell>Rs {purchase.rate}</TableCell>
+                  <TableCell className="font-medium">Rs {purchase.total}</TableCell>
                   <TableCell>{new Date(purchase.date).toLocaleDateString("en-IN")}</TableCell>
                   <TableCell>
                     <Badge

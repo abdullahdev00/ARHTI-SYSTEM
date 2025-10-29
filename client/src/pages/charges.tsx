@@ -2,7 +2,9 @@ import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Plus, Search, LayoutGrid, List, DollarSign } from "lucide-react";
+import { Plus, Search, DollarSign } from "lucide-react";
+import { useViewMode } from "@/hooks/use-view-mode";
+import { ViewToggle } from "@/components/view-toggle";
 import {
   Dialog,
   DialogContent,
@@ -30,19 +32,18 @@ import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 
 const mockCharges = [
-  { id: "1", title: "Labor Cost", amount: "PKR 2,000", type: "Labor", date: "2024-10-27", appliedTo: "Purchase #12" },
-  { id: "2", title: "Transport Fee", amount: "PKR 1,500", type: "Transport", date: "2024-10-26", appliedTo: "Purchase #11" },
-  { id: "3", title: "Mandi Tax", amount: "PKR 800", type: "Misc", date: "2024-10-25", appliedTo: "Batch #5" },
+  { id: "1", title: "Labor Cost", amount: "2,000", lastEdited: "2024-10-27" },
+  { id: "2", title: "Transport Fee", amount: "1,500", lastEdited: "2024-10-26" },
+  { id: "3", title: "Mandi Tax", amount: "800", lastEdited: "2024-10-25" },
 ];
 
 export default function Charges() {
-  const [viewMode, setViewMode] = useState<"grid" | "table">("grid");
+  const { viewMode } = useViewMode();
   const [searchQuery, setSearchQuery] = useState("");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   const filteredCharges = mockCharges.filter(charge =>
-    charge.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    charge.type.toLowerCase().includes(searchQuery.toLowerCase())
+    charge.title.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   return (
@@ -66,25 +67,8 @@ export default function Charges() {
                 <Input id="title" placeholder="e.g., Labor Cost" className="rounded-2xl" data-testid="input-charge-title" />
               </div>
               <div>
-                <Label htmlFor="amount">Amount (PKR)</Label>
+                <Label htmlFor="amount">Amount (Rs)</Label>
                 <Input id="amount" type="number" placeholder="1000" className="rounded-2xl" data-testid="input-charge-amount" />
-              </div>
-              <div>
-                <Label htmlFor="type">Charge Type</Label>
-                <Select>
-                  <SelectTrigger className="rounded-2xl" data-testid="select-charge-type">
-                    <SelectValue placeholder="Select type" />
-                  </SelectTrigger>
-                  <SelectContent className="rounded-2xl">
-                    <SelectItem value="labor">Labor</SelectItem>
-                    <SelectItem value="transport">Transport</SelectItem>
-                    <SelectItem value="misc">Miscellaneous</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div>
-                <Label htmlFor="appliedTo">Applied To</Label>
-                <Input id="appliedTo" placeholder="e.g., Purchase #12" className="rounded-2xl" data-testid="input-applied-to" />
               </div>
               <div>
                 <Label htmlFor="notes">Notes</Label>
@@ -109,26 +93,7 @@ export default function Charges() {
             data-testid="input-search-charges"
           />
         </div>
-        <div className="flex gap-2 shrink-0">
-          <Button
-            variant={viewMode === "grid" ? "default" : "outline"}
-            size="icon"
-            onClick={() => setViewMode("grid")}
-            className="rounded-2xl"
-            data-testid="button-view-grid"
-          >
-            <LayoutGrid className="h-4 w-4" />
-          </Button>
-          <Button
-            variant={viewMode === "table" ? "default" : "outline"}
-            size="icon"
-            onClick={() => setViewMode("table")}
-            className="rounded-2xl"
-            data-testid="button-view-table"
-          >
-            <List className="h-4 w-4" />
-          </Button>
-        </div>
+        <ViewToggle />
       </div>
 
       {viewMode === "grid" ? (
@@ -140,9 +105,6 @@ export default function Charges() {
                   <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center transition-all duration-300 hover:bg-primary/20 hover:scale-110">
                     <DollarSign className="h-5 w-5 text-primary" />
                   </div>
-                  <Badge variant="secondary" className="rounded-2xl">
-                    {charge.type}
-                  </Badge>
                 </div>
                 <CardTitle className="mt-3">{charge.title}</CardTitle>
               </CardHeader>
@@ -150,19 +112,11 @@ export default function Charges() {
                 <div className="space-y-2 text-sm">
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Amount:</span>
-                    <span className="font-medium">{charge.amount}</span>
+                    <span className="font-medium">Rs {charge.amount}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-muted-foreground">Type:</span>
-                    <span className="font-medium">{charge.type}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Applied To:</span>
-                    <span className="font-medium">{charge.appliedTo}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Date:</span>
-                    <span className="font-medium">{new Date(charge.date).toLocaleDateString("en-IN")}</span>
+                    <span className="text-muted-foreground">Last Edited:</span>
+                    <span className="font-medium">{new Date(charge.lastEdited).toLocaleDateString("en-IN")}</span>
                   </div>
                 </div>
               </CardContent>
@@ -176,23 +130,15 @@ export default function Charges() {
               <TableRow>
                 <TableHead>Charge Title</TableHead>
                 <TableHead>Amount</TableHead>
-                <TableHead>Type</TableHead>
-                <TableHead>Applied To</TableHead>
-                <TableHead>Date</TableHead>
+                <TableHead>Last Edited</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {filteredCharges.map((charge) => (
                 <TableRow key={charge.id} data-testid={`row-charge-${charge.id}`}>
                   <TableCell className="font-medium">{charge.title}</TableCell>
-                  <TableCell className="font-medium">{charge.amount}</TableCell>
-                  <TableCell>
-                    <Badge variant="secondary" className="rounded-2xl">
-                      {charge.type}
-                    </Badge>
-                  </TableCell>
-                  <TableCell>{charge.appliedTo}</TableCell>
-                  <TableCell>{new Date(charge.date).toLocaleDateString("en-IN")}</TableCell>
+                  <TableCell className="font-medium">Rs {charge.amount}</TableCell>
+                  <TableCell>{new Date(charge.lastEdited).toLocaleDateString("en-IN")}</TableCell>
                 </TableRow>
               ))}
             </TableBody>
