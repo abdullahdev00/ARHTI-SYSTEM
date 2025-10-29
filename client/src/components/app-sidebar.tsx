@@ -96,15 +96,8 @@ export function AppSidebar() {
       </SidebarContent>
 
       <SidebarFooter className="border-t p-4">
-        <div className="rounded-2xl bg-muted/50 p-4 space-y-2">
-          <div className="flex justify-between items-center">
-            <span className="text-xs text-muted-foreground">Active Farmers</span>
-            <span className="text-sm font-bold text-primary">48</span>
-          </div>
-          <div className="flex justify-between items-center">
-            <span className="text-xs text-muted-foreground">Pending</span>
-            <span className="text-sm font-bold text-accent">PKR 1.2L</span>
-          </div>
+        <div className="rounded-2xl bg-muted/50 p-3">
+          <p className="text-xs text-center text-muted-foreground">Arhti Business v1.0</p>
         </div>
       </SidebarFooter>
     </Sidebar>
