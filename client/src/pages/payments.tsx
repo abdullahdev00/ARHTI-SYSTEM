@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Plus, Search, ArrowDownLeft, ArrowUpRight, Wallet } from "lucide-react";
+import { Plus, Search, ArrowDownLeft, ArrowUpRight, Wallet, LayoutGrid, List } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -36,6 +36,7 @@ const mockPayments = [
 ];
 
 export default function Payments() {
+  const [viewMode, setViewMode] = useState<"grid" | "table">("grid");
   const [searchQuery, setSearchQuery] = useState("");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
@@ -116,61 +117,139 @@ export default function Payments() {
         />
       </div>
 
-      <div className="relative">
-        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-        <Input
-          placeholder="Search payments..."
-          className="pl-10 rounded-2xl"
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          data-testid="input-search-payments"
-        />
+      <div className="flex gap-4">
+        <div className="relative flex-1">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Input
+            placeholder="Search payments..."
+            className="pl-10 rounded-2xl"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            data-testid="input-search-payments"
+          />
+        </div>
+        <div className="flex gap-2 shrink-0">
+          <Button
+            variant={viewMode === "grid" ? "default" : "outline"}
+            size="icon"
+            onClick={() => setViewMode("grid")}
+            className="rounded-2xl"
+            data-testid="button-view-grid"
+          >
+            <LayoutGrid className="h-4 w-4" />
+          </Button>
+          <Button
+            variant={viewMode === "table" ? "default" : "outline"}
+            size="icon"
+            onClick={() => setViewMode("table")}
+            className="rounded-2xl"
+            data-testid="button-view-table"
+          >
+            <List className="h-4 w-4" />
+          </Button>
+        </div>
       </div>
 
-      <Card className="rounded-2xl">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Name</TableHead>
-              <TableHead>Invoice</TableHead>
-              <TableHead>Amount</TableHead>
-              <TableHead>Type</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead>Date</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {filteredPayments.map((payment) => (
-              <TableRow key={payment.id} data-testid={`row-payment-${payment.id}`}>
-                <TableCell className="font-medium">{payment.name}</TableCell>
-                <TableCell>{payment.invoice}</TableCell>
-                <TableCell className="font-medium">{payment.amount}</TableCell>
-                <TableCell>
-                  <Badge
-                    variant={payment.type === "incoming" ? "default" : "secondary"}
-                    className="rounded-2xl"
-                  >
+      {viewMode === "grid" ? (
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          {filteredPayments.map((payment) => (
+            <Card key={payment.id} className="rounded-2xl hover-elevate" data-testid={`card-payment-${payment.id}`}>
+              <CardHeader>
+                <div className="flex items-start justify-between">
+                  <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center transition-all duration-300 hover:bg-primary/20 hover:scale-110">
                     {payment.type === "incoming" ? (
-                      <><ArrowDownLeft className="h-3 w-3 mr-1" /> Incoming</>
+                      <ArrowDownLeft className="h-5 w-5 text-primary" />
                     ) : (
-                      <><ArrowUpRight className="h-3 w-3 mr-1" /> Outgoing</>
+                      <ArrowUpRight className="h-5 w-5 text-primary" />
                     )}
-                  </Badge>
-                </TableCell>
-                <TableCell>
+                  </div>
                   <Badge
                     variant={payment.status === "completed" ? "default" : "secondary"}
                     className="rounded-2xl"
                   >
                     {payment.status}
                   </Badge>
-                </TableCell>
-                <TableCell>{new Date(payment.date).toLocaleDateString("en-IN")}</TableCell>
+                </div>
+                <CardTitle className="mt-3">{payment.name}</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-2 text-sm">
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Invoice:</span>
+                    <span className="font-medium">{payment.invoice}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Amount:</span>
+                    <span className="font-medium">{payment.amount}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Type:</span>
+                    <Badge
+                      variant={payment.type === "incoming" ? "default" : "secondary"}
+                      className="rounded-2xl"
+                    >
+                      {payment.type === "incoming" ? (
+                        <><ArrowDownLeft className="h-3 w-3 mr-1" /> Incoming</>
+                      ) : (
+                        <><ArrowUpRight className="h-3 w-3 mr-1" /> Outgoing</>
+                      )}
+                    </Badge>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Date:</span>
+                    <span className="font-medium">{new Date(payment.date).toLocaleDateString("en-IN")}</span>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      ) : (
+        <Card className="rounded-2xl">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Name</TableHead>
+                <TableHead>Invoice</TableHead>
+                <TableHead>Amount</TableHead>
+                <TableHead>Type</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead>Date</TableHead>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </Card>
+            </TableHeader>
+            <TableBody>
+              {filteredPayments.map((payment) => (
+                <TableRow key={payment.id} data-testid={`row-payment-${payment.id}`}>
+                  <TableCell className="font-medium">{payment.name}</TableCell>
+                  <TableCell>{payment.invoice}</TableCell>
+                  <TableCell className="font-medium">{payment.amount}</TableCell>
+                  <TableCell>
+                    <Badge
+                      variant={payment.type === "incoming" ? "default" : "secondary"}
+                      className="rounded-2xl"
+                    >
+                      {payment.type === "incoming" ? (
+                        <><ArrowDownLeft className="h-3 w-3 mr-1" /> Incoming</>
+                      ) : (
+                        <><ArrowUpRight className="h-3 w-3 mr-1" /> Outgoing</>
+                      )}
+                    </Badge>
+                  </TableCell>
+                  <TableCell>
+                    <Badge
+                      variant={payment.status === "completed" ? "default" : "secondary"}
+                      className="rounded-2xl"
+                    >
+                      {payment.status}
+                    </Badge>
+                  </TableCell>
+                  <TableCell>{new Date(payment.date).toLocaleDateString("en-IN")}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </Card>
+      )}
     </div>
   );
 }

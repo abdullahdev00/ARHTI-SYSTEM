@@ -1,8 +1,8 @@
 import { useState } from "react";
-import { Card } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Plus, Search } from "lucide-react";
+import { Plus, Search, LayoutGrid, List, DollarSign } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -36,6 +36,7 @@ const mockCharges = [
 ];
 
 export default function Charges() {
+  const [viewMode, setViewMode] = useState<"grid" | "table">("grid");
   const [searchQuery, setSearchQuery] = useState("");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
@@ -97,45 +98,107 @@ export default function Charges() {
         </Dialog>
       </div>
 
-      <div className="relative">
-        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-        <Input
-          placeholder="Search charges..."
-          className="pl-10 rounded-2xl"
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          data-testid="input-search-charges"
-        />
+      <div className="flex gap-4">
+        <div className="relative flex-1">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Input
+            placeholder="Search charges..."
+            className="pl-10 rounded-2xl"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            data-testid="input-search-charges"
+          />
+        </div>
+        <div className="flex gap-2 shrink-0">
+          <Button
+            variant={viewMode === "grid" ? "default" : "outline"}
+            size="icon"
+            onClick={() => setViewMode("grid")}
+            className="rounded-2xl"
+            data-testid="button-view-grid"
+          >
+            <LayoutGrid className="h-4 w-4" />
+          </Button>
+          <Button
+            variant={viewMode === "table" ? "default" : "outline"}
+            size="icon"
+            onClick={() => setViewMode("table")}
+            className="rounded-2xl"
+            data-testid="button-view-table"
+          >
+            <List className="h-4 w-4" />
+          </Button>
+        </div>
       </div>
 
-      <Card className="rounded-2xl">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Charge Title</TableHead>
-              <TableHead>Amount</TableHead>
-              <TableHead>Type</TableHead>
-              <TableHead>Applied To</TableHead>
-              <TableHead>Date</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {filteredCharges.map((charge) => (
-              <TableRow key={charge.id} data-testid={`row-charge-${charge.id}`}>
-                <TableCell className="font-medium">{charge.title}</TableCell>
-                <TableCell className="font-medium">{charge.amount}</TableCell>
-                <TableCell>
+      {viewMode === "grid" ? (
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          {filteredCharges.map((charge) => (
+            <Card key={charge.id} className="rounded-2xl hover-elevate" data-testid={`card-charge-${charge.id}`}>
+              <CardHeader>
+                <div className="flex items-start justify-between">
+                  <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center transition-all duration-300 hover:bg-primary/20 hover:scale-110">
+                    <DollarSign className="h-5 w-5 text-primary" />
+                  </div>
                   <Badge variant="secondary" className="rounded-2xl">
                     {charge.type}
                   </Badge>
-                </TableCell>
-                <TableCell>{charge.appliedTo}</TableCell>
-                <TableCell>{new Date(charge.date).toLocaleDateString("en-IN")}</TableCell>
+                </div>
+                <CardTitle className="mt-3">{charge.title}</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-2 text-sm">
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Amount:</span>
+                    <span className="font-medium">{charge.amount}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Type:</span>
+                    <span className="font-medium">{charge.type}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Applied To:</span>
+                    <span className="font-medium">{charge.appliedTo}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Date:</span>
+                    <span className="font-medium">{new Date(charge.date).toLocaleDateString("en-IN")}</span>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      ) : (
+        <Card className="rounded-2xl">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Charge Title</TableHead>
+                <TableHead>Amount</TableHead>
+                <TableHead>Type</TableHead>
+                <TableHead>Applied To</TableHead>
+                <TableHead>Date</TableHead>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </Card>
+            </TableHeader>
+            <TableBody>
+              {filteredCharges.map((charge) => (
+                <TableRow key={charge.id} data-testid={`row-charge-${charge.id}`}>
+                  <TableCell className="font-medium">{charge.title}</TableCell>
+                  <TableCell className="font-medium">{charge.amount}</TableCell>
+                  <TableCell>
+                    <Badge variant="secondary" className="rounded-2xl">
+                      {charge.type}
+                    </Badge>
+                  </TableCell>
+                  <TableCell>{charge.appliedTo}</TableCell>
+                  <TableCell>{new Date(charge.date).toLocaleDateString("en-IN")}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </Card>
+      )}
     </div>
   );
 }

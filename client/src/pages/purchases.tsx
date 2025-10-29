@@ -1,9 +1,9 @@
 import { useState } from "react";
-import { Card } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Plus, Search } from "lucide-react";
+import { Plus, Search, LayoutGrid, List, ShoppingCart } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -35,6 +35,7 @@ const mockPurchases = [
 ];
 
 export default function Purchases() {
+  const [viewMode, setViewMode] = useState<"grid" | "table">("grid");
   const [searchQuery, setSearchQuery] = useState("");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
@@ -96,52 +97,121 @@ export default function Purchases() {
         </Dialog>
       </div>
 
-      <div className="relative">
-        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-        <Input
-          placeholder="Search purchases..."
-          className="pl-10 rounded-2xl"
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          data-testid="input-search-purchases"
-        />
+      <div className="flex gap-4">
+        <div className="relative flex-1">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Input
+            placeholder="Search purchases..."
+            className="pl-10 rounded-2xl"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            data-testid="input-search-purchases"
+          />
+        </div>
+        <div className="flex gap-2 shrink-0">
+          <Button
+            variant={viewMode === "grid" ? "default" : "outline"}
+            size="icon"
+            onClick={() => setViewMode("grid")}
+            className="rounded-2xl"
+            data-testid="button-view-grid"
+          >
+            <LayoutGrid className="h-4 w-4" />
+          </Button>
+          <Button
+            variant={viewMode === "table" ? "default" : "outline"}
+            size="icon"
+            onClick={() => setViewMode("table")}
+            className="rounded-2xl"
+            data-testid="button-view-table"
+          >
+            <List className="h-4 w-4" />
+          </Button>
+        </div>
       </div>
 
-      <Card className="rounded-2xl">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Farmer</TableHead>
-              <TableHead>Crop</TableHead>
-              <TableHead>Quantity (kg)</TableHead>
-              <TableHead>Rate/kg</TableHead>
-              <TableHead>Total</TableHead>
-              <TableHead>Date</TableHead>
-              <TableHead>Payment Status</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {filteredPurchases.map((purchase) => (
-              <TableRow key={purchase.id} data-testid={`row-purchase-${purchase.id}`}>
-                <TableCell className="font-medium">{purchase.farmer}</TableCell>
-                <TableCell>{purchase.crop}</TableCell>
-                <TableCell>{purchase.quantity}</TableCell>
-                <TableCell>PKR {purchase.rate}</TableCell>
-                <TableCell className="font-medium">{purchase.total}</TableCell>
-                <TableCell>{new Date(purchase.date).toLocaleDateString("en-IN")}</TableCell>
-                <TableCell>
+      {viewMode === "grid" ? (
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          {filteredPurchases.map((purchase) => (
+            <Card key={purchase.id} className="rounded-2xl hover-elevate" data-testid={`card-purchase-${purchase.id}`}>
+              <CardHeader>
+                <div className="flex items-start justify-between">
+                  <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center transition-all duration-300 hover:bg-primary/20 hover:scale-110">
+                    <ShoppingCart className="h-5 w-5 text-primary" />
+                  </div>
                   <Badge
                     variant={purchase.status === "paid" ? "default" : "secondary"}
                     className="rounded-2xl"
                   >
                     {purchase.status}
                   </Badge>
-                </TableCell>
+                </div>
+                <CardTitle className="mt-3">{purchase.farmer}</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-2 text-sm">
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Crop:</span>
+                    <span className="font-medium">{purchase.crop}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Quantity:</span>
+                    <span className="font-medium">{purchase.quantity} kg</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Rate/kg:</span>
+                    <span className="font-medium">PKR {purchase.rate}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Total:</span>
+                    <span className="font-medium">{purchase.total}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Date:</span>
+                    <span className="font-medium">{new Date(purchase.date).toLocaleDateString("en-IN")}</span>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      ) : (
+        <Card className="rounded-2xl">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Farmer</TableHead>
+                <TableHead>Crop</TableHead>
+                <TableHead>Quantity (kg)</TableHead>
+                <TableHead>Rate/kg</TableHead>
+                <TableHead>Total</TableHead>
+                <TableHead>Date</TableHead>
+                <TableHead>Payment Status</TableHead>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </Card>
+            </TableHeader>
+            <TableBody>
+              {filteredPurchases.map((purchase) => (
+                <TableRow key={purchase.id} data-testid={`row-purchase-${purchase.id}`}>
+                  <TableCell className="font-medium">{purchase.farmer}</TableCell>
+                  <TableCell>{purchase.crop}</TableCell>
+                  <TableCell>{purchase.quantity}</TableCell>
+                  <TableCell>PKR {purchase.rate}</TableCell>
+                  <TableCell className="font-medium">{purchase.total}</TableCell>
+                  <TableCell>{new Date(purchase.date).toLocaleDateString("en-IN")}</TableCell>
+                  <TableCell>
+                    <Badge
+                      variant={purchase.status === "paid" ? "default" : "secondary"}
+                      className="rounded-2xl"
+                    >
+                      {purchase.status}
+                    </Badge>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </Card>
+      )}
     </div>
   );
 }
