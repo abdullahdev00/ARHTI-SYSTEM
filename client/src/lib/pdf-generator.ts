@@ -283,17 +283,27 @@ export function generatePurchaseInvoice(
   if (action === "print") {
     const pdfBlob = doc.output('blob');
     const pdfUrl = URL.createObjectURL(pdfBlob);
-    const printWindow = window.open(pdfUrl, '_blank');
     
-    if (printWindow) {
-      printWindow.onload = () => {
-        printWindow.focus();
-        printWindow.print();
+    const iframe = document.createElement('iframe');
+    iframe.style.display = 'none';
+    iframe.style.position = 'fixed';
+    iframe.src = pdfUrl;
+    
+    document.body.appendChild(iframe);
+    
+    iframe.onload = () => {
+      try {
+        iframe.contentWindow?.focus();
+        iframe.contentWindow?.print();
+      } catch (error) {
+        console.error('Print error:', error);
+      }
+      
+      setTimeout(() => {
+        document.body.removeChild(iframe);
         URL.revokeObjectURL(pdfUrl);
-      };
-    } else {
-      URL.revokeObjectURL(pdfUrl);
-    }
+      }, 1000);
+    };
   } else {
     doc.save(filename);
   }
