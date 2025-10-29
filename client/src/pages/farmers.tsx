@@ -23,10 +23,10 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 
 const mockFarmers = [
-  { id: "1", name: "Ram Singh", phone: "+92 300 1234567", crop: "Wheat", totalAmount: "Rs 45,000", status: "active", lastDeal: "2 days ago" },
-  { id: "2", name: "Mohan Kumar", phone: "+92 300 1234568", crop: "Rice", totalAmount: "Rs 38,500", status: "active", lastDeal: "5 days ago" },
-  { id: "3", name: "Vijay Sharma", phone: "+92 300 1234569", crop: "Bajra", totalAmount: "Rs 32,000", status: "active", lastDeal: "1 week ago" },
-  { id: "4", name: "Suresh Patel", phone: "+92 300 1234570", crop: "Cotton", totalAmount: "Rs 28,000", status: "inactive", lastDeal: "3 weeks ago" },
+  { id: "1", name: "Ram Singh", phone: "03001234567", crop: "Wheat", totalAmount: "PKR 45,000", status: "active", lastDeal: "2 days ago" },
+  { id: "2", name: "Mohan Kumar", phone: "03001234568", crop: "Rice", totalAmount: "PKR 38,500", status: "active", lastDeal: "5 days ago" },
+  { id: "3", name: "Vijay Sharma", phone: "03001234569", crop: "Bajra", totalAmount: "PKR 32,000", status: "active", lastDeal: "1 week ago" },
+  { id: "4", name: "Suresh Patel", phone: "03001234570", crop: "Cotton", totalAmount: "PKR 28,000", status: "inactive", lastDeal: "3 weeks ago" },
 ];
 
 export default function Farmers() {
@@ -41,11 +41,11 @@ export default function Farmers() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 animate-fade-in-up">
+      <div className="flex items-center justify-between gap-4 animate-fade-in-up">
         <h1 className="text-3xl font-bold" data-testid="text-page-title">Farmers</h1>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
-            <Button className="rounded-2xl" data-testid="button-add-farmer">
+            <Button className="rounded-2xl shrink-0" data-testid="button-add-farmer">
               <Plus className="mr-2 h-4 w-4" />
               Add Farmer
             </Button>
@@ -61,7 +61,7 @@ export default function Farmers() {
               </div>
               <div>
                 <Label htmlFor="phone">Phone Number</Label>
-                <Input id="phone" placeholder="+92 300 1234567" className="rounded-2xl" data-testid="input-farmer-phone" />
+                <Input id="phone" placeholder="03001234567" className="rounded-2xl" data-testid="input-farmer-phone" />
               </div>
               <div>
                 <Label htmlFor="address">Address</Label>
@@ -83,7 +83,7 @@ export default function Farmers() {
         </Dialog>
       </div>
 
-      <div className="flex flex-col sm:flex-row gap-4">
+      <div className="flex gap-4">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
@@ -94,7 +94,7 @@ export default function Farmers() {
             data-testid="input-search-farmers"
           />
         </div>
-        <div className="flex gap-2">
+        <div className="flex gap-2 shrink-0">
           <Button
             variant={viewMode === "grid" ? "default" : "outline"}
             size="icon"

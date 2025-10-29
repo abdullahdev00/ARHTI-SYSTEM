@@ -48,11 +48,15 @@ function App() {
             <div className="flex h-screen w-full overflow-hidden">
               <AppSidebar />
               <div className="flex flex-col flex-1 overflow-hidden">
-                <header className="hidden md:flex items-center justify-between px-6 py-4 border-b shrink-0">
-                  <SidebarTrigger data-testid="button-sidebar-toggle" />
-                  <ThemeToggle />
+                <header className="hidden md:flex items-center justify-between px-6 py-3 border-b shrink-0 bg-background/95 backdrop-blur-lg">
+                  <div className="flex items-center gap-4">
+                    <SidebarTrigger data-testid="button-sidebar-toggle" />
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <ThemeToggle />
+                  </div>
                 </header>
-                <header className="flex md:hidden items-center justify-between px-4 py-4 border-b shrink-0">
+                <header className="flex md:hidden items-center justify-between px-4 py-3 border-b shrink-0 bg-background/95 backdrop-blur-lg">
                   <h2 className="text-lg font-semibold">Arhti Business</h2>
                   <ThemeToggle />
                 </header>
