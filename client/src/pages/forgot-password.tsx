@@ -44,9 +44,9 @@ export default function ForgotPassword() {
           <div className="text-center text-sm text-muted-foreground">
             Remember your password?{" "}
             <Link href="/signin">
-              <a className="text-green-600 hover:text-green-700 font-medium" data-testid="link-signin">
+              <span className="text-green-600 hover:text-green-700 font-medium cursor-pointer" data-testid="link-signin">
                 Sign in
-              </a>
+              </span>
             </Link>
           </div>
         </CardContent>
