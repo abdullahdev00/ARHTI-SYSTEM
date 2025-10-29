@@ -1,12 +1,18 @@
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 
+export interface InvoiceItem {
+  description: string;
+  dateRange: string;
+  quantity: number;
+  rate: number;
+  amount: number;
+}
+
 export interface InvoiceData {
   id: string;
   farmer: string;
-  crop: string;
-  quantity: string;
-  rate: string;
+  items: InvoiceItem[];
   purchaseTotal: number;
   charges: Array<{ title: string; amount: number }>;
   totalCharges: number;
@@ -159,14 +165,16 @@ export function generatePurchaseInvoice(
 
   yPosition = Math.max(yPosition, rightY) + 10;
 
-  const tableData: any[][] = [
-    [
-      data.crop + '\n' + `${invoiceDate.toLocaleDateString('en-PK', { month: 'short', day: 'numeric' })} - ${new Date().toLocaleDateString('en-PK', { month: 'short', day: 'numeric', year: 'numeric' })}`,
-      data.quantity,
-      `Rs ${parseFloat(data.rate).toLocaleString()}`,
-      `Rs ${data.purchaseTotal.toLocaleString()}`
-    ]
-  ];
+  const tableData: any[][] = [];
+  
+  data.items.forEach(item => {
+    tableData.push([
+      item.description + '\n' + item.dateRange,
+      item.quantity.toLocaleString(),
+      `Rs ${item.rate.toLocaleString()}`,
+      `Rs ${item.amount.toLocaleString()}`
+    ]);
+  });
 
   data.charges.forEach(charge => {
     tableData.push([
@@ -281,29 +289,9 @@ export function generatePurchaseInvoice(
   const filename = `Invoice_${invoiceNumber}_${data.farmer.replace(/\s+/g, '_')}.pdf`;
   
   if (action === "print") {
-    const pdfBlob = doc.output('blob');
-    const pdfUrl = URL.createObjectURL(pdfBlob);
-    
-    const iframe = document.createElement('iframe');
-    iframe.style.display = 'none';
-    iframe.style.position = 'fixed';
-    iframe.src = pdfUrl;
-    
-    document.body.appendChild(iframe);
-    
-    iframe.onload = () => {
-      try {
-        iframe.contentWindow?.focus();
-        iframe.contentWindow?.print();
-      } catch (error) {
-        console.error('Print error:', error);
-      }
-      
-      setTimeout(() => {
-        document.body.removeChild(iframe);
-        URL.revokeObjectURL(pdfUrl);
-      }, 1000);
-    };
+    doc.autoPrint();
+    const pdfBlob = doc.output('bloburl');
+    window.open(pdfBlob, '_blank');
   } else {
     doc.save(filename);
   }

@@ -65,9 +65,15 @@ export default function Invoices() {
     const invoiceData = {
       id: invoice.id,
       farmer: invoice.farmer,
-      crop: "Mixed Crops",
-      quantity: "700",
-      rate: (total / 700).toFixed(2),
+      items: [
+        {
+          description: "Mixed Crops",
+          dateRange: new Date(invoice.date).toLocaleDateString('en-PK', { month: 'short', day: 'numeric' }) + ' - ' + new Date().toLocaleDateString('en-PK', { month: 'short', day: 'numeric', year: 'numeric' }),
+          quantity: 700,
+          rate: parseFloat((total / 700).toFixed(2)),
+          amount: total
+        }
+      ],
       purchaseTotal: total,
       charges: [],
       totalCharges: commission,

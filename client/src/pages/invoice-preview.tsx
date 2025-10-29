@@ -58,9 +58,7 @@ export default function InvoicePreview() {
     const invoiceData = {
       id: invoice.id,
       farmer: invoice.farmer.name,
-      crop: invoice.items.map(i => i.description).join(', '),
-      quantity: invoice.items.reduce((sum, i) => sum + i.quantity, 0).toString(),
-      rate: (invoice.subtotal / invoice.items.reduce((sum, i) => sum + i.quantity, 0)).toFixed(2),
+      items: invoice.items,
       purchaseTotal: invoice.subtotal,
       charges: [],
       totalCharges: invoice.commission + invoice.charges,
@@ -75,9 +73,7 @@ export default function InvoicePreview() {
     const invoiceData = {
       id: invoice.id,
       farmer: invoice.farmer.name,
-      crop: invoice.items.map(i => i.description).join(', '),
-      quantity: invoice.items.reduce((sum, i) => sum + i.quantity, 0).toString(),
-      rate: (invoice.subtotal / invoice.items.reduce((sum, i) => sum + i.quantity, 0)).toFixed(2),
+      items: invoice.items,
       purchaseTotal: invoice.subtotal,
       charges: [],
       totalCharges: invoice.commission + invoice.charges,
