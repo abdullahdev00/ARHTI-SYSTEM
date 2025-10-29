@@ -1,12 +1,13 @@
 import { Link } from "wouter";
 import { Card, CardContent } from "@/components/ui/card";
-import { ShoppingCart, DollarSign, BarChart3, Settings, Package } from "lucide-react";
+import { ShoppingCart, DollarSign, BarChart3, Settings, Package, Share2 } from "lucide-react";
 
 const moreItems = [
   { title: "Stock", url: "/stock", icon: Package, description: "View and manage inventory stock" },
   { title: "Purchases", url: "/purchases", icon: ShoppingCart, description: "Manage all purchase records" },
   { title: "Charges", url: "/charges", icon: DollarSign, description: "Track additional charges and fees" },
   { title: "Reports", url: "/reports", icon: BarChart3, description: "View business analytics and reports" },
+  { title: "Affiliate Program", url: "/affiliate", icon: Share2, description: "Earn by referring others" },
   { title: "Settings", url: "/settings", icon: Settings, description: "Configure application settings" },
 ];
 

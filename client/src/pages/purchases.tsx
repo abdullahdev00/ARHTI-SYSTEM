@@ -219,13 +219,18 @@ export default function Purchases() {
       });
 
       const invoiceId = `PUR-${Date.now()}`;
+      const bagTypeLabel = bagType === "custom" ? `${customBagWeight}kg` : bagType;
       
       generatePurchaseInvoice({
         id: invoiceId,
         farmer: selectedFarmer || 'Farmer Name',
-        crop: selectedCrop || 'Crop Name',
-        quantity: numberOfBags,
-        rate: ratePerBag,
+        items: [{
+          description: `${selectedCrop || 'Crop'} - ${bagTypeLabel} bags`,
+          dateRange: new Date(purchaseDate).toLocaleDateString('en-PK', { year: 'numeric', month: 'short', day: 'numeric' }),
+          quantity: parseFloat(numberOfBags),
+          rate: parseFloat(ratePerBag),
+          amount: purchaseTotal
+        }],
         purchaseTotal: purchaseTotal,
         charges: selectedChargesData,
         totalCharges: calculateTotalCharges(),

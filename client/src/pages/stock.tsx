@@ -3,11 +3,13 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Plus, Search, Package } from "lucide-react";
+import { Plus, Search, Package, Minus } from "lucide-react";
 import { useViewMode } from "@/hooks/use-view-mode";
 import { ViewToggle } from "@/components/view-toggle";
 import { PageFilter, type FilterOption } from "@/components/page-filter";
 import { getMockData } from "@shared/schema";
+import { Checkbox } from "@/components/ui/checkbox";
+import { generatePurchaseInvoice } from "@/lib/pdf-generator";
 
 const stockFilters: FilterOption[] = [
   {
@@ -65,8 +67,15 @@ import { Label } from "@/components/ui/label";
 export default function Stock() {
   const { viewMode } = useViewMode();
   const [searchQuery, setSearchQuery] = useState("");
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
+  const [isSellDialogOpen, setIsSellDialogOpen] = useState(false);
   const [activeFilters, setActiveFilters] = useState<Record<string, string[]>>({});
+  
+  const [selectedStockItem, setSelectedStockItem] = useState("");
+  const [selectedBagType, setSelectedBagType] = useState("");
+  const [sellQuantity, setSellQuantity] = useState("");
+  const [customerName, setCustomerName] = useState("");
+  const [generateInvoice, setGenerateInvoice] = useState(false);
 
   const mockData = getMockData();
   const mockStock = mockData.stock;
@@ -105,57 +114,203 @@ export default function Stock() {
     return matchesSearch && matchesFilters;
   });
 
+  const handleSellStock = () => {
+    if (generateInvoice && selectedStockItem && selectedBagType && sellQuantity && customerName) {
+      const stockItem = mockStock.find(item => item.id === selectedStockItem);
+      if (!stockItem) return;
+      
+      const bagInfo = selectedBagType === "60kg" ? stockItem.bags60kg : stockItem.bags40kg;
+      const totalAmount = parseFloat(sellQuantity) * bagInfo.sellRate;
+      
+      generatePurchaseInvoice({
+        id: `SELL-${Date.now()}`,
+        farmer: customerName,
+        items: [{
+          description: `${stockItem.crop} - ${selectedBagType} bags`,
+          dateRange: new Date().toLocaleDateString('en-PK', { year: 'numeric', month: 'short', day: 'numeric' }),
+          quantity: parseFloat(sellQuantity),
+          rate: bagInfo.sellRate,
+          amount: totalAmount
+        }],
+        purchaseTotal: totalAmount,
+        charges: [],
+        totalCharges: 0,
+        grandTotal: totalAmount,
+        date: new Date().toISOString()
+      }, "download");
+    }
+    
+    setIsSellDialogOpen(false);
+    setSelectedStockItem("");
+    setSelectedBagType("");
+    setSellQuantity("");
+    setCustomerName("");
+    setGenerateInvoice(false);
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between gap-4 animate-fade-in-up">
         <h1 className="text-3xl font-bold" data-testid="text-page-title">Stock Inventory</h1>
-        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-          <DialogTrigger asChild>
-            <Button className="rounded-2xl shrink-0" data-testid="button-add-stock">
-              <Plus className="mr-2 h-4 w-4" />
-              Add Stock
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="rounded-2xl sm:max-w-md max-h-[90vh] sm:max-h-fit">
-            <DialogHeader>
-              <DialogTitle>Add Stock Entry</DialogTitle>
-            </DialogHeader>
-            <div className="space-y-4">
-              <div>
-                <Label htmlFor="crop">Crop Type</Label>
-                <Input id="crop" placeholder="e.g., Wheat, Rice" className="rounded-2xl" data-testid="input-crop" />
-              </div>
-              <div>
-                <Label htmlFor="bagType">Bag Type</Label>
-                <Select>
-                  <SelectTrigger className="rounded-2xl">
-                    <SelectValue placeholder="Select bag size" />
-                  </SelectTrigger>
-                  <SelectContent className="rounded-2xl">
-                    <SelectItem value="40kg">40 kg bag</SelectItem>
-                    <SelectItem value="60kg">60 kg bag</SelectItem>
-                    <SelectItem value="custom">Custom weight</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div>
-                <Label htmlFor="quantity">Number of Bags</Label>
-                <Input id="quantity" type="number" placeholder="100" className="rounded-2xl" data-testid="input-quantity" />
-              </div>
-              <div>
-                <Label htmlFor="buyRate">Buy Rate per Bag (Rs)</Label>
-                <Input id="buyRate" type="number" placeholder="2100" className="rounded-2xl" data-testid="input-buy-rate" />
-              </div>
-              <div>
-                <Label htmlFor="sellRate">Sell Rate per Bag (Rs)</Label>
-                <Input id="sellRate" type="number" placeholder="2200" className="rounded-2xl" data-testid="input-sell-rate" />
-              </div>
-              <Button className="w-full rounded-2xl" data-testid="button-submit-stock">
-                Add to Stock
+        <div className="flex gap-2">
+          <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
+            <DialogTrigger asChild>
+              <Button className="rounded-2xl shrink-0" data-testid="button-add-stock">
+                <Plus className="mr-2 h-4 w-4" />
+                Add
               </Button>
-            </div>
-          </DialogContent>
-        </Dialog>
+            </DialogTrigger>
+            <DialogContent className="rounded-2xl sm:max-w-md max-h-[90vh] sm:max-h-fit">
+              <DialogHeader>
+                <DialogTitle>Add Stock Entry</DialogTitle>
+              </DialogHeader>
+              <div className="space-y-4">
+                <div>
+                  <Label htmlFor="crop">Crop Type</Label>
+                  <Input id="crop" placeholder="e.g., Wheat, Rice" className="rounded-2xl" data-testid="input-crop" />
+                </div>
+                <div>
+                  <Label htmlFor="bagType">Bag Type</Label>
+                  <Select>
+                    <SelectTrigger className="rounded-2xl">
+                      <SelectValue placeholder="Select bag size" />
+                    </SelectTrigger>
+                    <SelectContent className="rounded-2xl">
+                      <SelectItem value="40kg">40 kg bag</SelectItem>
+                      <SelectItem value="60kg">60 kg bag</SelectItem>
+                      <SelectItem value="custom">Custom weight</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label htmlFor="quantity">Number of Bags</Label>
+                  <Input id="quantity" type="number" placeholder="100" className="rounded-2xl" data-testid="input-quantity" />
+                </div>
+                <div>
+                  <Label htmlFor="buyRate">Buy Rate per Bag (Rs)</Label>
+                  <Input id="buyRate" type="number" placeholder="2100" className="rounded-2xl" data-testid="input-buy-rate" />
+                </div>
+                <div>
+                  <Label htmlFor="sellRate">Sell Rate per Bag (Rs)</Label>
+                  <Input id="sellRate" type="number" placeholder="2200" className="rounded-2xl" data-testid="input-sell-rate" />
+                </div>
+                <Button className="w-full rounded-2xl" data-testid="button-submit-stock">
+                  Add to Stock
+                </Button>
+              </div>
+            </DialogContent>
+          </Dialog>
+          
+          <Dialog open={isSellDialogOpen} onOpenChange={setIsSellDialogOpen}>
+            <DialogTrigger asChild>
+              <Button variant="outline" className="rounded-2xl shrink-0" data-testid="button-sell-stock">
+                <Minus className="mr-2 h-4 w-4" />
+                Sell
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="rounded-2xl sm:max-w-md max-h-[90vh] sm:max-h-fit">
+              <DialogHeader>
+                <DialogTitle>Sell Stock</DialogTitle>
+              </DialogHeader>
+              <div className="space-y-4">
+                <div>
+                  <Label htmlFor="stockItem">Select Stock Item</Label>
+                  <Select value={selectedStockItem} onValueChange={setSelectedStockItem}>
+                    <SelectTrigger className="rounded-2xl" data-testid="select-stock-item">
+                      <SelectValue placeholder="Choose stock item" />
+                    </SelectTrigger>
+                    <SelectContent className="rounded-2xl">
+                      {mockStock.map((item) => (
+                        <SelectItem key={item.id} value={item.id}>
+                          {item.crop}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {selectedStockItem && (
+                  <>
+                    <div>
+                      <Label htmlFor="bagTypeSell">Bag Type</Label>
+                      <Select value={selectedBagType} onValueChange={setSelectedBagType}>
+                        <SelectTrigger className="rounded-2xl" data-testid="select-bag-type-sell">
+                          <SelectValue placeholder="Select bag type" />
+                        </SelectTrigger>
+                        <SelectContent className="rounded-2xl">
+                          {(() => {
+                            const stockItem = mockStock.find(item => item.id === selectedStockItem);
+                            if (!stockItem) return null;
+                            return (
+                              <>
+                                {stockItem.bags60kg.quantity > 0 && (
+                                  <SelectItem value="60kg">
+                                    60kg bags (Available: {stockItem.bags60kg.quantity})
+                                  </SelectItem>
+                                )}
+                                {stockItem.bags40kg.quantity > 0 && (
+                                  <SelectItem value="40kg">
+                                    40kg bags (Available: {stockItem.bags40kg.quantity})
+                                  </SelectItem>
+                                )}
+                              </>
+                            );
+                          })()}
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <div>
+                      <Label htmlFor="sellQuantity">Quantity to Sell</Label>
+                      <Input 
+                        id="sellQuantity" 
+                        type="number" 
+                        placeholder="Enter quantity" 
+                        className="rounded-2xl"
+                        value={sellQuantity}
+                        onChange={(e) => setSellQuantity(e.target.value)}
+                        data-testid="input-sell-quantity" 
+                      />
+                    </div>
+
+                    <div>
+                      <Label htmlFor="customerName">Customer Name</Label>
+                      <Input 
+                        id="customerName" 
+                        placeholder="Enter customer name" 
+                        className="rounded-2xl"
+                        value={customerName}
+                        onChange={(e) => setCustomerName(e.target.value)}
+                        data-testid="input-customer-name" 
+                      />
+                    </div>
+
+                    <div className="flex items-center space-x-2">
+                      <Checkbox 
+                        id="generateInvoice"
+                        checked={generateInvoice}
+                        onCheckedChange={(checked) => setGenerateInvoice(checked as boolean)}
+                        data-testid="checkbox-generate-invoice"
+                      />
+                      <Label htmlFor="generateInvoice" className="cursor-pointer">
+                        Generate Invoice
+                      </Label>
+                    </div>
+
+                    <Button 
+                      className="w-full rounded-2xl" 
+                      onClick={handleSellStock}
+                      disabled={!sellQuantity || !customerName}
+                      data-testid="button-submit-sell"
+                    >
+                      Sell Stock
+                    </Button>
+                  </>
+                )}
+              </div>
+            </DialogContent>
+          </Dialog>
+        </div>
       </div>
 
       <div className="flex gap-4">

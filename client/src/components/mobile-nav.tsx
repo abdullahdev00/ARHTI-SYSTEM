@@ -18,22 +18,25 @@ export function MobileNav() {
     <div className="fixed bottom-4 left-4 right-4 z-50 md:hidden animate-fade-in-up">
       <nav className="bg-card/95 border border-card-border rounded-2xl shadow-xl backdrop-blur-lg p-2">
         <div className="flex items-center justify-around gap-1">
-          {mainNavItems.map((item) => (
-            <Link key={item.title} href={item.url}>
-              <Button
-                variant="ghost"
-                size="icon"
-                className={cn(
-                  "flex flex-col items-center justify-center h-auto py-2 px-3 rounded-xl",
-                  location === item.url && "bg-primary/10 text-primary"
-                )}
-                data-testid={`mobile-nav-${item.title.toLowerCase()}`}
-              >
-                <item.icon className="h-5 w-5" />
-                <span className="text-xs mt-1">{item.title}</span>
-              </Button>
-            </Link>
-          ))}
+          {mainNavItems.map((item) => {
+            const isActive = location === item.url;
+            return (
+              <Link key={item.title} href={item.url}>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className={cn(
+                    "flex flex-col items-center justify-center h-auto py-2 px-3 rounded-xl",
+                    isActive && "bg-primary/10"
+                  )}
+                  data-testid={`mobile-nav-${item.title.toLowerCase()}`}
+                >
+                  <item.icon className={cn("h-5 w-5", isActive && "text-primary")} />
+                  <span className={cn("text-xs mt-1", isActive && "text-primary font-semibold")}>{item.title}</span>
+                </Button>
+              </Link>
+            );
+          })}
         </div>
       </nav>
     </div>

@@ -21,6 +21,9 @@ import Charges from "@/pages/charges";
 import Reports from "@/pages/reports";
 import Settings from "@/pages/settings";
 import More from "@/pages/more";
+import Affiliate from "@/pages/affiliate";
+import Signup from "@/pages/signup";
+import Signin from "@/pages/signin";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -37,6 +40,9 @@ function Router() {
       <Route path="/reports" component={Reports} />
       <Route path="/settings" component={Settings} />
       <Route path="/more" component={More} />
+      <Route path="/affiliate" component={Affiliate} />
+      <Route path="/signup" component={Signup} />
+      <Route path="/signin" component={Signin} />
       <Route component={NotFound} />
     </Switch>
   );

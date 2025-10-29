@@ -75,14 +75,14 @@ export function AppSidebar() {
                         asChild
                         className={`rounded-xl transition-all duration-200 ${
                           isActive
-                            ? "bg-gradient-to-r from-primary to-primary/90 text-primary-foreground shadow-md hover:shadow-lg"
-                            : "hover-elevate"
+                            ? "bg-primary/10 text-primary hover:bg-primary/20"
+                            : "hover:bg-accent"
                         }`}
                         data-testid={`nav-${item.title.toLowerCase()}`}
                       >
                         <Link href={item.url}>
-                          <item.icon className={`h-4 w-4 ${isActive ? "drop-shadow-sm" : ""}`} />
-                          <span className={`font-medium ${isActive ? "font-semibold" : ""}`}>
+                          <item.icon className={`h-4 w-4 ${isActive ? "text-primary" : ""}`} />
+                          <span className={`font-medium ${isActive ? "font-semibold text-primary" : ""}`}>
                             {item.title}
                           </span>
                         </Link>

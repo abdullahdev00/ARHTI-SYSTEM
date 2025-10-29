@@ -4,21 +4,17 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { useLocation } from "wouter";
 
 export default function Dashboard() {
+  const [, setLocation] = useLocation();
+  
   const currentDate = new Date().toLocaleDateString("en-IN", {
     weekday: "long",
     year: "numeric",
     month: "long",
     day: "numeric",
   });
-
-  const recentActivities = [
-    { id: 1, text: "Received Rs 10,000 from Factory A", time: "2h ago", type: "payment" },
-    { id: 2, text: "Added purchase from Ram Singh - 500kg Wheat", time: "5h ago", type: "purchase" },
-    { id: 3, text: "Created invoice #INV-001 for Rs 25,000", time: "1d ago", type: "invoice" },
-    { id: 4, text: "New farmer added: Mohan Kumar", time: "2d ago", type: "farmer" },
-  ];
 
   return (
     <div className="space-y-6">
@@ -53,48 +49,41 @@ export default function Dashboard() {
         />
       </div>
 
-      <div className="grid gap-6 md:grid-cols-2">
-        <Card className="rounded-2xl">
-          <CardHeader>
-            <CardTitle>Recent Activity</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {recentActivities.map((activity) => (
-                <div key={activity.id} className="flex items-start gap-3" data-testid={`activity-${activity.id}`}>
-                  <div className="w-2 h-2 rounded-full bg-primary mt-2" />
-                  <div className="flex-1">
-                    <p className="text-sm font-medium">{activity.text}</p>
-                    <p className="text-xs text-muted-foreground mt-1">{activity.time}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="rounded-2xl">
-          <CardHeader>
-            <CardTitle>Quick Actions</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-3">
-              <Button className="w-full justify-start rounded-2xl" data-testid="button-add-purchase">
-                <Plus className="mr-2 h-4 w-4" />
-                Add Purchase
-              </Button>
-              <Button className="w-full justify-start rounded-2xl" variant="outline" data-testid="button-create-invoice">
-                <Plus className="mr-2 h-4 w-4" />
-                Create Invoice
-              </Button>
-              <Button className="w-full justify-start rounded-2xl" variant="outline" data-testid="button-add-payment">
-                <Plus className="mr-2 h-4 w-4" />
-                Add Payment
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+      <Card className="rounded-2xl">
+        <CardHeader>
+          <CardTitle>Quick Actions</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-3">
+            <Button 
+              className="w-full justify-start rounded-2xl" 
+              onClick={() => setLocation('/purchases')}
+              data-testid="button-add-purchase"
+            >
+              <Plus className="mr-2 h-4 w-4" />
+              Add Purchase
+            </Button>
+            <Button 
+              className="w-full justify-start rounded-2xl" 
+              variant="outline"
+              onClick={() => setLocation('/invoices')}
+              data-testid="button-create-invoice"
+            >
+              <Plus className="mr-2 h-4 w-4" />
+              Create Invoice
+            </Button>
+            <Button 
+              className="w-full justify-start rounded-2xl" 
+              variant="outline"
+              onClick={() => setLocation('/payments')}
+              data-testid="button-add-payment"
+            >
+              <Plus className="mr-2 h-4 w-4" />
+              Add Payment
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
 
       <Card className="rounded-2xl">
         <CardHeader>
