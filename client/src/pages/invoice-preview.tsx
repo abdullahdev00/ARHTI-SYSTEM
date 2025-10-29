@@ -11,6 +11,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { generatePurchaseInvoice } from "@/lib/pdf-generator";
 
 const businessData = {
   fullName: "Muhammad Ali",
@@ -69,7 +70,20 @@ export default function InvoicePreview() {
   };
 
   const handleDownload = () => {
-    console.log("Download PDF triggered");
+    const invoiceData = {
+      id: invoice.id,
+      farmer: invoice.farmer.name,
+      crop: invoice.items.map(i => i.description).join(', '),
+      quantity: invoice.items.reduce((sum, i) => sum + i.quantity, 0).toString(),
+      rate: (invoice.subtotal / invoice.items.reduce((sum, i) => sum + i.quantity, 0)).toFixed(2),
+      purchaseTotal: invoice.subtotal,
+      charges: [],
+      totalCharges: invoice.commission + invoice.charges,
+      grandTotal: invoice.amountDue,
+      date: invoice.date
+    };
+    
+    generatePurchaseInvoice(invoiceData, printMode, businessData);
   };
 
   const isColorMode = printMode === "color";

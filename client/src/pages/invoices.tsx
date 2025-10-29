@@ -3,12 +3,20 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Plus, Search, Eye } from "lucide-react";
+import { Plus, Search, Eye, Download, FileText } from "lucide-react";
 import { Link } from "wouter";
 import { useViewMode } from "@/hooks/use-view-mode";
 import { ViewToggle } from "@/components/view-toggle";
 import { PageFilter, type FilterOption } from "@/components/page-filter";
 import { getMockData } from "@shared/schema";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 
 const invoiceFilters: FilterOption[] = [
   {
@@ -39,21 +47,6 @@ const invoiceFilters: FilterOption[] = [
     ],
   },
 ];
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 
 export default function Invoices() {
   const { viewMode } = useViewMode();
@@ -62,7 +55,6 @@ export default function Invoices() {
 
   const mockData = getMockData();
   const mockInvoices = mockData.invoices;
-  const [selectedInvoice, setSelectedInvoice] = useState<typeof mockInvoices[0] | null>(null);
 
   const filteredInvoices = mockInvoices.filter(invoice => {
     const matchesSearch = invoice.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -126,7 +118,7 @@ export default function Invoices() {
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
-            placeholder="Search invoices..."
+            placeholder="Search invoices by ID or farmer name..."
             className="pl-10 rounded-2xl"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
@@ -141,41 +133,72 @@ export default function Invoices() {
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {filteredInvoices.map((invoice) => (
             <Card key={invoice.id} className="rounded-2xl hover-elevate" data-testid={`card-invoice-${invoice.id}`}>
-              <CardHeader>
+              <CardHeader className="pb-3">
                 <div className="flex items-start justify-between">
-                  <div>
-                    <h3 className="font-semibold text-lg">{invoice.id}</h3>
-                    <p className="text-sm text-muted-foreground mt-1">{invoice.farmer}</p>
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2 mb-2">
+                      <FileText className="h-5 w-5 text-primary" />
+                      <h3 className="font-bold text-lg">{invoice.id}</h3>
+                    </div>
+                    <p className="text-sm text-muted-foreground font-medium">{invoice.farmer}</p>
                   </div>
                   <Badge
                     variant={invoice.status === "paid" ? "default" : "secondary"}
-                    className="rounded-2xl"
+                    className="rounded-full text-xs px-3"
                   >
-                    {invoice.status}
+                    {invoice.status.toUpperCase()}
                   </Badge>
                 </div>
               </CardHeader>
-              <CardContent className="space-y-3">
-                <div className="grid grid-cols-2 gap-2 text-sm">
-                  <div>
-                    <p className="text-muted-foreground">Date</p>
-                    <p className="font-medium">{new Date(invoice.date).toLocaleDateString("en-PK")}</p>
+              <CardContent className="space-y-4">
+                <div className="space-y-2">
+                  <div className="flex justify-between items-center text-sm">
+                    <span className="text-muted-foreground">Invoice Date</span>
+                    <span className="font-medium">
+                      {new Date(invoice.date).toLocaleDateString("en-PK", {
+                        year: 'numeric',
+                        month: 'short',
+                        day: 'numeric'
+                      })}
+                    </span>
                   </div>
-                  <div>
-                    <p className="text-muted-foreground">Total</p>
-                    <p className="font-medium">{invoice.total}</p>
+                  
+                  <div className="flex justify-between items-center text-sm border-t pt-2">
+                    <span className="text-muted-foreground">Subtotal</span>
+                    <span className="font-medium">{invoice.total}</span>
+                  </div>
+                  
+                  <div className="flex justify-between items-center text-sm">
+                    <span className="text-muted-foreground">Commission</span>
+                    <span className="font-medium text-amber-600 dark:text-amber-500">
+                      -{invoice.commission}
+                    </span>
                   </div>
                 </div>
-                <div className="pt-2 border-t">
-                  <p className="text-sm text-muted-foreground">Net Payable</p>
-                  <p className="text-lg font-bold text-primary">{invoice.netPayable}</p>
+                
+                <div className="pt-3 border-t">
+                  <div className="flex justify-between items-center mb-3">
+                    <span className="text-sm font-semibold">Net Payable</span>
+                    <span className="text-xl font-bold text-primary">{invoice.netPayable}</span>
+                  </div>
+                  
+                  <div className="flex gap-2">
+                    <Link href={`/invoices/${invoice.id}`} className="flex-1">
+                      <Button variant="outline" className="w-full rounded-2xl" data-testid={`button-view-${invoice.id}`}>
+                        <Eye className="mr-2 h-4 w-4" />
+                        View
+                      </Button>
+                    </Link>
+                    <Button 
+                      variant="default" 
+                      size="icon" 
+                      className="rounded-2xl"
+                      data-testid={`button-download-${invoice.id}`}
+                    >
+                      <Download className="h-4 w-4" />
+                    </Button>
+                  </div>
                 </div>
-                <Link href={`/invoices/${invoice.id}`}>
-                  <Button variant="outline" className="w-full rounded-2xl" data-testid={`button-view-${invoice.id}`}>
-                    <Eye className="mr-2 h-4 w-4" />
-                    View Invoice
-                  </Button>
-                </Link>
               </CardContent>
             </Card>
           ))}
@@ -183,52 +206,84 @@ export default function Invoices() {
       ) : (
         <Card className="rounded-2xl">
           <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Invoice ID</TableHead>
-              <TableHead>Farmer</TableHead>
-              <TableHead>Date</TableHead>
-              <TableHead>Total</TableHead>
-              <TableHead>Commission</TableHead>
-              <TableHead>Net Payable</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead>Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {filteredInvoices.map((invoice) => (
-              <TableRow key={invoice.id} data-testid={`row-invoice-${invoice.id}`}>
-                <TableCell className="font-medium">{invoice.id}</TableCell>
-                <TableCell>{invoice.farmer}</TableCell>
-                <TableCell>{new Date(invoice.date).toLocaleDateString("en-IN")}</TableCell>
-                <TableCell>{invoice.total}</TableCell>
-                <TableCell>{invoice.commission}</TableCell>
-                <TableCell className="font-medium">{invoice.netPayable}</TableCell>
-                <TableCell>
-                  <Badge
-                    variant={invoice.status === "paid" ? "default" : "secondary"}
-                    className="rounded-2xl"
-                  >
-                    {invoice.status}
-                  </Badge>
-                </TableCell>
-                <TableCell>
-                  <Link href={`/invoices/${invoice.id}`}>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="rounded-2xl"
-                      data-testid={`button-view-${invoice.id}`}
-                    >
-                      <Eye className="h-4 w-4" />
-                    </Button>
-                  </Link>
-                </TableCell>
+            <TableHeader>
+              <TableRow className="hover:bg-transparent">
+                <TableHead className="font-semibold">Invoice ID</TableHead>
+                <TableHead className="font-semibold">Farmer</TableHead>
+                <TableHead className="font-semibold">Date</TableHead>
+                <TableHead className="font-semibold text-right">Subtotal</TableHead>
+                <TableHead className="font-semibold text-right">Commission</TableHead>
+                <TableHead className="font-semibold text-right">Net Payable</TableHead>
+                <TableHead className="font-semibold">Status</TableHead>
+                <TableHead className="font-semibold text-center">Actions</TableHead>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </Card>
+            </TableHeader>
+            <TableBody>
+              {filteredInvoices.map((invoice) => (
+                <TableRow key={invoice.id} className="group" data-testid={`row-invoice-${invoice.id}`}>
+                  <TableCell className="font-bold">{invoice.id}</TableCell>
+                  <TableCell className="font-medium">{invoice.farmer}</TableCell>
+                  <TableCell className="text-muted-foreground">
+                    {new Date(invoice.date).toLocaleDateString("en-PK", {
+                      year: 'numeric',
+                      month: 'short',
+                      day: 'numeric'
+                    })}
+                  </TableCell>
+                  <TableCell className="text-right font-medium">{invoice.total}</TableCell>
+                  <TableCell className="text-right font-medium text-amber-600 dark:text-amber-500">
+                    -{invoice.commission}
+                  </TableCell>
+                  <TableCell className="text-right font-bold text-primary">{invoice.netPayable}</TableCell>
+                  <TableCell>
+                    <Badge
+                      variant={invoice.status === "paid" ? "default" : "secondary"}
+                      className="rounded-full text-xs px-3"
+                    >
+                      {invoice.status.toUpperCase()}
+                    </Badge>
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex items-center justify-center gap-1">
+                      <Link href={`/invoices/${invoice.id}`}>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="rounded-2xl h-8 w-8"
+                          data-testid={`button-view-${invoice.id}`}
+                        >
+                          <Eye className="h-4 w-4" />
+                        </Button>
+                      </Link>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="rounded-2xl h-8 w-8"
+                        data-testid={`button-download-${invoice.id}`}
+                      >
+                        <Download className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </Card>
+      )}
+
+      {filteredInvoices.length === 0 && (
+        <Card className="rounded-2xl p-12">
+          <div className="text-center space-y-3">
+            <FileText className="h-12 w-12 mx-auto text-muted-foreground" />
+            <h3 className="text-lg font-semibold">No invoices found</h3>
+            <p className="text-sm text-muted-foreground">
+              {searchQuery || Object.keys(activeFilters).length > 0
+                ? "Try adjusting your search or filters"
+                : "Create your first invoice to get started"}
+            </p>
+          </div>
+        </Card>
       )}
     </div>
   );
