@@ -9,6 +9,7 @@ import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { MobileNav } from "@/components/mobile-nav";
+import { UserProfile } from "@/components/user-profile";
 import Dashboard from "@/pages/dashboard";
 import Farmers from "@/pages/farmers";
 import Purchases from "@/pages/purchases";
@@ -62,11 +63,15 @@ function App() {
                   </div>
                   <div className="flex items-center gap-3">
                     <ThemeToggle />
+                    <UserProfile />
                   </div>
                 </header>
                 <header className="flex md:hidden items-center justify-between px-4 py-3 border-b shrink-0 bg-background/95 backdrop-blur-lg">
                   <h2 className="text-lg font-semibold">Arhti Business</h2>
-                  <ThemeToggle />
+                  <div className="flex items-center gap-2">
+                    <ThemeToggle />
+                    <UserProfile />
+                  </div>
                 </header>
                 <main className="flex-1 overflow-auto px-4 md:px-6 py-6 pb-28 md:pb-6">
                   <div className="max-w-7xl mx-auto">
