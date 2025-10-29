@@ -64,9 +64,21 @@ export default function InvoicePreview() {
 
   const handlePrint = (mode: "color" | "bw") => {
     setPrintMode(mode);
-    setTimeout(() => {
-      window.print();
-    }, 100);
+    
+    const invoiceData = {
+      id: invoice.id,
+      farmer: invoice.farmer.name,
+      crop: invoice.items.map(i => i.description).join(', '),
+      quantity: invoice.items.reduce((sum, i) => sum + i.quantity, 0).toString(),
+      rate: (invoice.subtotal / invoice.items.reduce((sum, i) => sum + i.quantity, 0)).toFixed(2),
+      purchaseTotal: invoice.subtotal,
+      charges: [],
+      totalCharges: invoice.commission + invoice.charges,
+      grandTotal: invoice.amountDue,
+      date: invoice.date
+    };
+    
+    generatePurchaseInvoice(invoiceData, mode, businessData);
   };
 
   const handleDownload = () => {
@@ -127,18 +139,18 @@ export default function InvoicePreview() {
         }
       `}</style>
 
-      <div className="print:hidden sticky top-0 z-50 bg-background border-b backdrop-blur-lg">
-        <div className="max-w-4xl mx-auto px-4 py-4">
+      <div className="print:hidden bg-background border-b">
+        <div className="max-w-4xl mx-auto px-4 py-3">
           <div className="flex items-center justify-between gap-4">
             <Link href="/invoices">
-              <Button variant="ghost" size="icon" className="rounded-2xl">
+              <Button variant="ghost" size="icon" className="rounded-2xl transition-all active:scale-95">
                 <ArrowLeft className="h-5 w-5" />
               </Button>
             </Link>
             <div className="flex gap-2">
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="outline" size="icon" className="rounded-2xl">
+                  <Button variant="outline" size="icon" className="rounded-2xl transition-all active:scale-95">
                     <Palette className="h-4 w-4" />
                   </Button>
                 </DropdownMenuTrigger>
@@ -156,13 +168,13 @@ export default function InvoicePreview() {
               <Button
                 variant="outline"
                 size="icon"
-                className="rounded-2xl"
+                className="rounded-2xl transition-all active:scale-95"
                 onClick={handleDownload}
               >
                 <Download className="h-4 w-4" />
               </Button>
               <Button
-                className="rounded-2xl"
+                className="rounded-2xl transition-all active:scale-95"
                 onClick={() => handlePrint("color")}
               >
                 <Printer className="mr-2 h-4 w-4" />

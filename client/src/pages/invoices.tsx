@@ -9,6 +9,7 @@ import { useViewMode } from "@/hooks/use-view-mode";
 import { ViewToggle } from "@/components/view-toggle";
 import { PageFilter, type FilterOption } from "@/components/page-filter";
 import { getMockData } from "@shared/schema";
+import { generatePurchaseInvoice } from "@/lib/pdf-generator";
 import {
   Table,
   TableBody,
@@ -55,6 +56,27 @@ export default function Invoices() {
 
   const mockData = getMockData();
   const mockInvoices = mockData.invoices;
+
+  const handleDownloadInvoice = (invoice: typeof mockInvoices[0]) => {
+    const total = parseFloat(invoice.total.replace(/[^\d.]/g, ''));
+    const commission = parseFloat(invoice.commission.replace(/[^\d.]/g, ''));
+    const netPayable = parseFloat(invoice.netPayable.replace(/[^\d.]/g, ''));
+    
+    const invoiceData = {
+      id: invoice.id,
+      farmer: invoice.farmer,
+      crop: "Mixed Crops",
+      quantity: "700",
+      rate: (total / 700).toFixed(2),
+      purchaseTotal: total,
+      charges: [],
+      totalCharges: commission,
+      grandTotal: netPayable,
+      date: invoice.date
+    };
+    
+    generatePurchaseInvoice(invoiceData, "color");
+  };
 
   const filteredInvoices = mockInvoices.filter(invoice => {
     const matchesSearch = invoice.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -184,7 +206,7 @@ export default function Invoices() {
                   
                   <div className="flex gap-2">
                     <Link href={`/invoices/${invoice.id}`} className="flex-1">
-                      <Button variant="outline" className="w-full rounded-2xl" data-testid={`button-view-${invoice.id}`}>
+                      <Button variant="outline" className="w-full rounded-2xl transition-all active:scale-95" data-testid={`button-view-${invoice.id}`}>
                         <Eye className="mr-2 h-4 w-4" />
                         View
                       </Button>
@@ -192,7 +214,8 @@ export default function Invoices() {
                     <Button 
                       variant="default" 
                       size="icon" 
-                      className="rounded-2xl"
+                      className="rounded-2xl transition-all active:scale-95"
+                      onClick={() => handleDownloadInvoice(invoice)}
                       data-testid={`button-download-${invoice.id}`}
                     >
                       <Download className="h-4 w-4" />
@@ -249,7 +272,7 @@ export default function Invoices() {
                         <Button
                           variant="ghost"
                           size="icon"
-                          className="rounded-2xl h-8 w-8"
+                          className="rounded-2xl h-8 w-8 transition-all active:scale-95"
                           data-testid={`button-view-${invoice.id}`}
                         >
                           <Eye className="h-4 w-4" />
@@ -258,7 +281,8 @@ export default function Invoices() {
                       <Button
                         variant="ghost"
                         size="icon"
-                        className="rounded-2xl h-8 w-8"
+                        className="rounded-2xl h-8 w-8 transition-all active:scale-95"
+                        onClick={() => handleDownloadInvoice(invoice)}
                         data-testid={`button-download-${invoice.id}`}
                       >
                         <Download className="h-4 w-4" />
