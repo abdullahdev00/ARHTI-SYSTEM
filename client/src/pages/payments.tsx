@@ -1,0 +1,176 @@
+import { useState } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
+import { Plus, Search, ArrowDownLeft, ArrowUpRight, Wallet } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Label } from "@/components/ui/label";
+import { StatCard } from "@/components/stat-card";
+
+const mockPayments = [
+  { id: "1", name: "Factory A", invoice: "INV-001", amount: "₹12,500", type: "incoming", status: "completed", date: "2024-10-27" },
+  { id: "2", name: "Ram Singh", invoice: "INV-001", amount: "₹11,875", type: "outgoing", status: "completed", date: "2024-10-27" },
+  { id: "3", name: "Factory B", invoice: "INV-002", amount: "₹10,500", type: "incoming", status: "pending", date: "2024-10-26" },
+];
+
+export default function Payments() {
+  const [searchQuery, setSearchQuery] = useState("");
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+
+  const filteredPayments = mockPayments.filter(payment =>
+    payment.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    payment.invoice.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  const receivedFromFactory = "₹2,45,000";
+  const paidToFarmers = "₹2,15,500";
+  const pendingAmount = "₹29,500";
+
+  return (
+    <div className="space-y-6">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <h1 className="text-3xl font-bold" data-testid="text-page-title">Payments</h1>
+        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+          <DialogTrigger asChild>
+            <Button className="rounded-2xl" data-testid="button-add-payment">
+              <Plus className="mr-2 h-4 w-4" />
+              Add Payment
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="rounded-2xl sm:max-w-md">
+            <DialogHeader>
+              <DialogTitle>Add New Payment</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4">
+              <div>
+                <Label htmlFor="type">Payment Type</Label>
+                <Select>
+                  <SelectTrigger className="rounded-2xl" data-testid="select-payment-type">
+                    <SelectValue placeholder="Select type" />
+                  </SelectTrigger>
+                  <SelectContent className="rounded-2xl">
+                    <SelectItem value="incoming">Incoming (Received)</SelectItem>
+                    <SelectItem value="outgoing">Outgoing (Paid)</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label htmlFor="name">Name</Label>
+                <Input id="name" placeholder="Factory or Farmer name" className="rounded-2xl" data-testid="input-payment-name" />
+              </div>
+              <div>
+                <Label htmlFor="amount">Amount (₹)</Label>
+                <Input id="amount" type="number" placeholder="10000" className="rounded-2xl" data-testid="input-payment-amount" />
+              </div>
+              <div>
+                <Label htmlFor="date">Date</Label>
+                <Input id="date" type="date" className="rounded-2xl" data-testid="input-payment-date" />
+              </div>
+              <Button className="w-full rounded-2xl" data-testid="button-submit-payment">
+                Add Payment
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
+      </div>
+
+      <div className="grid gap-4 md:grid-cols-3">
+        <StatCard
+          title="Received from Factory"
+          value={receivedFromFactory}
+          icon={ArrowDownLeft}
+          trend={{ value: "15%", positive: true }}
+        />
+        <StatCard
+          title="Paid to Farmers"
+          value={paidToFarmers}
+          icon={ArrowUpRight}
+        />
+        <StatCard
+          title="Pending Amount"
+          value={pendingAmount}
+          icon={Wallet}
+          trend={{ value: "5%", positive: false }}
+        />
+      </div>
+
+      <div className="relative">
+        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+        <Input
+          placeholder="Search payments..."
+          className="pl-10 rounded-2xl"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          data-testid="input-search-payments"
+        />
+      </div>
+
+      <Card className="rounded-2xl">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Name</TableHead>
+              <TableHead>Invoice</TableHead>
+              <TableHead>Amount</TableHead>
+              <TableHead>Type</TableHead>
+              <TableHead>Status</TableHead>
+              <TableHead>Date</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {filteredPayments.map((payment) => (
+              <TableRow key={payment.id} data-testid={`row-payment-${payment.id}`}>
+                <TableCell className="font-medium">{payment.name}</TableCell>
+                <TableCell>{payment.invoice}</TableCell>
+                <TableCell className="font-medium">{payment.amount}</TableCell>
+                <TableCell>
+                  <Badge
+                    variant={payment.type === "incoming" ? "default" : "secondary"}
+                    className="rounded-2xl"
+                  >
+                    {payment.type === "incoming" ? (
+                      <><ArrowDownLeft className="h-3 w-3 mr-1" /> Incoming</>
+                    ) : (
+                      <><ArrowUpRight className="h-3 w-3 mr-1" /> Outgoing</>
+                    )}
+                  </Badge>
+                </TableCell>
+                <TableCell>
+                  <Badge
+                    variant={payment.status === "completed" ? "default" : "secondary"}
+                    className="rounded-2xl"
+                  >
+                    {payment.status}
+                  </Badge>
+                </TableCell>
+                <TableCell>{new Date(payment.date).toLocaleDateString("en-IN")}</TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </Card>
+    </div>
+  );
+}
