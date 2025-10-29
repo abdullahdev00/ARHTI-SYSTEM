@@ -18,6 +18,7 @@ import Payments from "@/pages/payments";
 import Charges from "@/pages/charges";
 import Reports from "@/pages/reports";
 import Settings from "@/pages/settings";
+import More from "@/pages/more";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -32,6 +33,7 @@ function Router() {
       <Route path="/charges" component={Charges} />
       <Route path="/reports" component={Reports} />
       <Route path="/settings" component={Settings} />
+      <Route path="/more" component={More} />
       <Route component={NotFound} />
     </Switch>
   );
