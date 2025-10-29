@@ -15,7 +15,7 @@ export default function InvoicePreview() {
     date: "2024-10-27",
     farmer: {
       name: "Ram Singh",
-      phone: "+92 300 1234567",
+      phone: "03001234567",
       address: "Village Kot Addu, Muzaffargarh, Punjab",
     },
     items: [
@@ -91,8 +91,8 @@ export default function InvoicePreview() {
         </div>
       </div>
 
-      <div className="max-w-4xl mx-auto p-4 md:p-8 animate-fade-in-up">
-        <Card className="rounded-2xl shadow-xl print:shadow-none transition-all duration-300" id="invoice-content">
+      <div className="max-w-4xl mx-auto p-4 md:p-8 animate-fade-in-up print:p-0">
+        <Card className="rounded-2xl shadow-xl print:shadow-none print:rounded-none transition-all duration-300 print:max-w-none print:w-[8.5in] print:min-h-[11in] print:mx-auto" id="invoice-content">
           <CardHeader className="border-b pb-6">
             <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-6">
               <div>
@@ -143,7 +143,7 @@ export default function InvoicePreview() {
                         <td className="p-4 text-right">{item.quantity.toLocaleString()}</td>
                         <td className="p-4 text-right">{item.rate.toLocaleString()}</td>
                         <td className="p-4 text-right font-medium">
-                          Rs {item.total.toLocaleString()}
+                          PKR {item.total.toLocaleString()}
                         </td>
                       </tr>
                     ))}
@@ -156,24 +156,24 @@ export default function InvoicePreview() {
               <div className="w-full md:w-80 space-y-3">
                 <div className="flex justify-between text-sm">
                   <span className="text-muted-foreground">Subtotal:</span>
-                  <span className="font-medium">Rs {invoice.subtotal.toLocaleString()}</span>
+                  <span className="font-medium">PKR {invoice.subtotal.toLocaleString()}</span>
                 </div>
                 <div className="flex justify-between text-sm">
                   <span className="text-muted-foreground">Commission (5%):</span>
                   <span className="font-medium text-red-600 dark:text-red-400">
-                    -Rs {invoice.commission.toLocaleString()}
+                    -PKR {invoice.commission.toLocaleString()}
                   </span>
                 </div>
                 <div className="flex justify-between text-sm">
                   <span className="text-muted-foreground">Charges:</span>
                   <span className="font-medium text-red-600 dark:text-red-400">
-                    -Rs {invoice.charges.toLocaleString()}
+                    -PKR {invoice.charges.toLocaleString()}
                   </span>
                 </div>
                 <div className="border-t pt-3 flex justify-between items-center">
                   <span className="text-lg font-bold">Net Payable:</span>
                   <span className="text-2xl font-bold text-primary">
-                    Rs {invoice.netPayable.toLocaleString()}
+                    PKR {invoice.netPayable.toLocaleString()}
                   </span>
                 </div>
                 <div className="flex justify-end">

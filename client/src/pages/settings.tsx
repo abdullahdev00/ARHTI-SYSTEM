@@ -28,19 +28,19 @@ export default function Settings() {
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            <Label>Theme Mode</Label>
-            <RadioGroup value={theme} onValueChange={(value) => setTheme(value as any)}>
-              <div className="flex items-center space-x-2">
+            <Label className="text-sm font-semibold">Theme Mode</Label>
+            <RadioGroup value={theme} onValueChange={(value) => setTheme(value as any)} className="space-y-3">
+              <div className="flex items-center space-x-3 p-4 rounded-2xl border hover-elevate cursor-pointer" onClick={() => setTheme("system")}>
                 <RadioGroupItem value="system" id="system" data-testid="radio-theme-system" />
-                <Label htmlFor="system">System Default</Label>
+                <Label htmlFor="system" className="cursor-pointer flex-1 font-medium">System Default</Label>
               </div>
-              <div className="flex items-center space-x-2">
+              <div className="flex items-center space-x-3 p-4 rounded-2xl border hover-elevate cursor-pointer" onClick={() => setTheme("light")}>
                 <RadioGroupItem value="light" id="light" data-testid="radio-theme-light" />
-                <Label htmlFor="light">Light Mode</Label>
+                <Label htmlFor="light" className="cursor-pointer flex-1 font-medium">Light Mode</Label>
               </div>
-              <div className="flex items-center space-x-2">
+              <div className="flex items-center space-x-3 p-4 rounded-2xl border hover-elevate cursor-pointer" onClick={() => setTheme("dark")}>
                 <RadioGroupItem value="dark" id="dark" data-testid="radio-theme-dark" />
-                <Label htmlFor="dark">Dark Mode</Label>
+                <Label htmlFor="dark" className="cursor-pointer flex-1 font-medium">Dark Mode</Label>
               </div>
             </RadioGroup>
           </div>
@@ -54,15 +54,15 @@ export default function Settings() {
         <CardContent>
           <div className="space-y-4">
             <div>
-              <Label>Commission Type</Label>
-              <RadioGroup value={commissionType} onValueChange={setCommissionType}>
-                <div className="flex items-center space-x-2">
+              <Label className="text-sm font-semibold">Commission Type</Label>
+              <RadioGroup value={commissionType} onValueChange={setCommissionType} className="space-y-3 mt-4">
+                <div className="flex items-center space-x-3 p-4 rounded-2xl border hover-elevate cursor-pointer" onClick={() => setCommissionType("percentage")}>
                   <RadioGroupItem value="percentage" id="percentage" data-testid="radio-commission-percentage" />
-                  <Label htmlFor="percentage">Fixed Percentage</Label>
+                  <Label htmlFor="percentage" className="cursor-pointer flex-1 font-medium">Fixed Percentage</Label>
                 </div>
-                <div className="flex items-center space-x-2">
+                <div className="flex items-center space-x-3 p-4 rounded-2xl border hover-elevate cursor-pointer" onClick={() => setCommissionType("transaction")}>
                   <RadioGroupItem value="transaction" id="transaction" data-testid="radio-commission-transaction" />
-                  <Label htmlFor="transaction">Per Transaction</Label>
+                  <Label htmlFor="transaction" className="cursor-pointer flex-1 font-medium">Per Transaction</Label>
                 </div>
               </RadioGroup>
             </div>
@@ -89,12 +89,12 @@ export default function Settings() {
           <div className="space-y-4">
             <div>
               <Label htmlFor="currency">Currency Format</Label>
-              <Select defaultValue="inr">
+              <Select defaultValue="pkr">
                 <SelectTrigger className="rounded-2xl" data-testid="select-currency">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent className="rounded-2xl">
-                  <SelectItem value="inr">INR (₹)</SelectItem>
+                  <SelectItem value="pkr">PKR (Rs)</SelectItem>
                   <SelectItem value="usd">USD ($)</SelectItem>
                 </SelectContent>
               </Select>
