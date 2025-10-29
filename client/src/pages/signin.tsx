@@ -49,6 +49,7 @@ export default function Signin() {
                 <Label htmlFor="password">Password</Label>
                 <button
                   type="button"
+                  onClick={() => setLocation('/forgot-password')}
                   className="text-sm text-primary hover:underline"
                   data-testid="link-forgot-password"
                 >

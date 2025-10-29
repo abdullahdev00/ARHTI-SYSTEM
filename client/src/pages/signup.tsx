@@ -3,10 +3,8 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Badge } from "@/components/ui/badge";
 import { useLocation } from "wouter";
 import { Chrome } from "lucide-react";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
 export default function Signup() {
   const [, setLocation] = useLocation();
@@ -18,18 +16,20 @@ export default function Signup() {
     businessName: "",
     phone: "",
     address: "",
-    registrationNo: "",
-    referralCode: "",
-    plan: "monthly"
+    registrationNo: ""
   });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     console.log("Signup form data:", formData);
+    // Navigate to plan selection page
+    setLocation('/plan');
   };
 
   const handleGoogleSignup = () => {
     console.log("Continue with Google");
+    // After Google signup, navigate to plan selection
+    setLocation('/plan');
   };
 
   return (
@@ -172,68 +172,9 @@ export default function Signup() {
               />
             </div>
 
-            <div>
-              <Label htmlFor="referralCode">Referral Code (Optional)</Label>
-              <Input
-                id="referralCode"
-                placeholder="Enter referral code for Rs 500 discount"
-                className="rounded-2xl"
-                value={formData.referralCode}
-                onChange={(e) => setFormData({ ...formData, referralCode: e.target.value })}
-                data-testid="input-referral-code"
-              />
-              {formData.referralCode && (
-                <p className="text-sm text-green-600 mt-1">✓ Rs 500 discount will be applied</p>
-              )}
-            </div>
-
-            <div className="space-y-3">
-              <Label>Select Plan *</Label>
-              <RadioGroup value={formData.plan} onValueChange={(value) => setFormData({ ...formData, plan: value })}>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <Card className={`cursor-pointer transition-all ${formData.plan === 'monthly' ? 'ring-2 ring-primary' : ''}`}>
-                    <CardContent className="p-4">
-                      <div className="flex items-start gap-3">
-                        <RadioGroupItem value="monthly" id="monthly" data-testid="radio-monthly" />
-                        <div className="flex-1">
-                          <Label htmlFor="monthly" className="cursor-pointer font-semibold text-base">
-                            Monthly Plan
-                          </Label>
-                          <div className="mt-2">
-                            <span className="text-2xl font-bold">Rs 1,000</span>
-                            <span className="text-muted-foreground">/month</span>
-                          </div>
-                          <p className="text-sm text-muted-foreground mt-2">Billed monthly</p>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-
-                  <Card className={`cursor-pointer transition-all ${formData.plan === 'yearly' ? 'ring-2 ring-primary' : ''}`}>
-                    <CardContent className="p-4">
-                      <div className="flex items-start gap-3">
-                        <RadioGroupItem value="yearly" id="yearly" data-testid="radio-yearly" />
-                        <div className="flex-1">
-                          <Label htmlFor="yearly" className="cursor-pointer font-semibold text-base flex items-center gap-2">
-                            Yearly Plan
-                            <Badge variant="secondary" className="rounded-full">Save 17%</Badge>
-                          </Label>
-                          <div className="mt-2">
-                            <span className="text-2xl font-bold">Rs 10,000</span>
-                            <span className="text-muted-foreground">/year</span>
-                          </div>
-                          <p className="text-sm text-muted-foreground mt-2">Rs 833/month when billed annually</p>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </div>
-              </RadioGroup>
-            </div>
-
             <div className="pt-4 space-y-3">
               <Button type="submit" className="w-full rounded-2xl h-12 text-base font-medium" data-testid="button-signup">
-                Create Account & Subscribe
+                Continue to Plan Selection
               </Button>
               <p className="text-center text-sm text-muted-foreground">
                 Already have an account?{" "}

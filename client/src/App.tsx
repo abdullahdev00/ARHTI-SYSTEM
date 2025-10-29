@@ -1,4 +1,4 @@
-import { Switch, Route } from "wouter";
+import { Switch, Route, useLocation } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
@@ -24,6 +24,8 @@ import More from "@/pages/more";
 import Affiliate from "@/pages/affiliate";
 import Signup from "@/pages/signup";
 import Signin from "@/pages/signin";
+import ForgotPassword from "@/pages/forgot-password";
+import Plan from "@/pages/plan";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -43,8 +45,49 @@ function Router() {
       <Route path="/affiliate" component={Affiliate} />
       <Route path="/signup" component={Signup} />
       <Route path="/signin" component={Signin} />
+      <Route path="/forgot-password" component={ForgotPassword} />
+      <Route path="/plan" component={Plan} />
       <Route component={NotFound} />
     </Switch>
+  );
+}
+
+function AppContent() {
+  const [location] = useLocation();
+  const isAuthPage = ["/signup", "/signin", "/forgot-password", "/plan"].includes(location);
+
+  if (isAuthPage) {
+    return <Router />;
+  }
+
+  return (
+    <div className="flex h-screen w-full overflow-hidden">
+      <AppSidebar />
+      <div className="flex flex-col flex-1 overflow-hidden">
+        <header className="hidden md:flex items-center justify-between px-6 py-3 border-b shrink-0 bg-background/95 backdrop-blur-lg">
+          <div className="flex items-center gap-4">
+            <SidebarTrigger data-testid="button-sidebar-toggle" />
+          </div>
+          <div className="flex items-center gap-3">
+            <ThemeToggle />
+            <UserProfile />
+          </div>
+        </header>
+        <header className="flex md:hidden items-center justify-between px-4 py-3 border-b shrink-0 bg-background/95 backdrop-blur-lg">
+          <h2 className="text-lg font-semibold">Arhti Business</h2>
+          <div className="flex items-center gap-2">
+            <ThemeToggle />
+            <UserProfile />
+          </div>
+        </header>
+        <main className="flex-1 overflow-auto px-4 md:px-6 py-6 pb-28 md:pb-6">
+          <div className="max-w-7xl mx-auto">
+            <Router />
+          </div>
+        </main>
+      </div>
+      <MobileNav />
+    </div>
   );
 }
 
@@ -60,33 +103,7 @@ function App() {
         <ViewModeProvider>
           <TooltipProvider>
             <SidebarProvider style={style as React.CSSProperties}>
-            <div className="flex h-screen w-full overflow-hidden">
-              <AppSidebar />
-              <div className="flex flex-col flex-1 overflow-hidden">
-                <header className="hidden md:flex items-center justify-between px-6 py-3 border-b shrink-0 bg-background/95 backdrop-blur-lg">
-                  <div className="flex items-center gap-4">
-                    <SidebarTrigger data-testid="button-sidebar-toggle" />
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <ThemeToggle />
-                    <UserProfile />
-                  </div>
-                </header>
-                <header className="flex md:hidden items-center justify-between px-4 py-3 border-b shrink-0 bg-background/95 backdrop-blur-lg">
-                  <h2 className="text-lg font-semibold">Arhti Business</h2>
-                  <div className="flex items-center gap-2">
-                    <ThemeToggle />
-                    <UserProfile />
-                  </div>
-                </header>
-                <main className="flex-1 overflow-auto px-4 md:px-6 py-6 pb-28 md:pb-6">
-                  <div className="max-w-7xl mx-auto">
-                    <Router />
-                  </div>
-                </main>
-              </div>
-            </div>
-              <MobileNav />
+              <AppContent />
             </SidebarProvider>
             <Toaster />
           </TooltipProvider>
