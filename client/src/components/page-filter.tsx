@@ -58,20 +58,18 @@ export function PageFilter({ filters, onFilterChange }: PageFilterProps) {
         <Button 
           variant="outline" 
           size="icon" 
-          className="rounded-2xl relative flex items-center justify-center shrink-0" 
+          className="rounded-2xl relative flex items-center justify-center shrink-0 w-10 h-10" 
           data-testid="button-filter"
         >
-          <div className="relative flex items-center justify-center">
-            <Filter className="h-4 w-4" />
-            {activeFilterCount > 0 && (
-              <Badge 
-                variant="default" 
-                className="absolute -top-2 -right-2 h-5 w-5 flex items-center justify-center p-0 rounded-full text-xs pointer-events-none"
-              >
-                {activeFilterCount}
-              </Badge>
-            )}
-          </div>
+          <Filter className="h-4 w-4" />
+          {activeFilterCount > 0 && (
+            <Badge 
+              variant="default" 
+              className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 rounded-full text-xs pointer-events-none"
+            >
+              {activeFilterCount}
+            </Badge>
+          )}
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-56 rounded-2xl">
