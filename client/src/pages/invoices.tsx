@@ -3,8 +3,41 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Plus, Search, Eye, LayoutGrid, List } from "lucide-react";
+import { Plus, Search, Eye } from "lucide-react";
 import { Link } from "wouter";
+import { useViewMode } from "@/hooks/use-view-mode";
+import { ViewToggle } from "@/components/view-toggle";
+import { PageFilter, type FilterOption } from "@/components/page-filter";
+
+const invoiceFilters: FilterOption[] = [
+  {
+    id: "status",
+    label: "Payment Status",
+    options: [
+      { value: "paid", label: "Paid" },
+      { value: "unpaid", label: "Unpaid" },
+    ],
+  },
+  {
+    id: "date",
+    label: "Date Range",
+    options: [
+      { value: "today", label: "Today" },
+      { value: "thisWeek", label: "This Week" },
+      { value: "thisMonth", label: "This Month" },
+      { value: "older", label: "Older" },
+    ],
+  },
+  {
+    id: "amount",
+    label: "Amount Range",
+    options: [
+      { value: "low", label: "< Rs 10,000" },
+      { value: "medium", label: "Rs 10,000 - 50,000" },
+      { value: "high", label: "> Rs 50,000" },
+    ],
+  },
+];
 import {
   Dialog,
   DialogContent,
@@ -28,7 +61,7 @@ const mockInvoices = [
 ];
 
 export default function Invoices() {
-  const [viewMode, setViewMode] = useState<"grid" | "table">("table");
+  const { viewMode } = useViewMode();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedInvoice, setSelectedInvoice] = useState<typeof mockInvoices[0] | null>(null);
 
@@ -58,26 +91,8 @@ export default function Invoices() {
             data-testid="input-search-invoices"
           />
         </div>
-        <div className="flex gap-2 shrink-0">
-          <Button
-            variant={viewMode === "grid" ? "default" : "outline"}
-            size="icon"
-            onClick={() => setViewMode("grid")}
-            className="rounded-2xl"
-            data-testid="button-view-grid"
-          >
-            <LayoutGrid className="h-4 w-4" />
-          </Button>
-          <Button
-            variant={viewMode === "table" ? "default" : "outline"}
-            size="icon"
-            onClick={() => setViewMode("table")}
-            className="rounded-2xl"
-            data-testid="button-view-table"
-          >
-            <List className="h-4 w-4" />
-          </Button>
-        </div>
+        <PageFilter filters={invoiceFilters} />
+        <ViewToggle />
       </div>
 
       {viewMode === "grid" ? (

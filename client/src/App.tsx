@@ -12,6 +12,7 @@ import { MobileNav } from "@/components/mobile-nav";
 import Dashboard from "@/pages/dashboard";
 import Farmers from "@/pages/farmers";
 import Purchases from "@/pages/purchases";
+import Stock from "@/pages/stock";
 import Invoices from "@/pages/invoices";
 import InvoicePreview from "@/pages/invoice-preview";
 import Payments from "@/pages/payments";
@@ -27,6 +28,7 @@ function Router() {
       <Route path="/" component={Dashboard} />
       <Route path="/farmers" component={Farmers} />
       <Route path="/purchases" component={Purchases} />
+      <Route path="/stock" component={Stock} />
       <Route path="/invoices/:id" component={InvoicePreview} />
       <Route path="/invoices" component={Invoices} />
       <Route path="/payments" component={Payments} />

@@ -6,6 +6,37 @@ import { Badge } from "@/components/ui/badge";
 import { Plus, Search } from "lucide-react";
 import { useViewMode } from "@/hooks/use-view-mode";
 import { ViewToggle } from "@/components/view-toggle";
+import { PageFilter, type FilterOption } from "@/components/page-filter";
+
+const farmerFilters: FilterOption[] = [
+  {
+    id: "status",
+    label: "Status",
+    options: [
+      { value: "active", label: "Active" },
+      { value: "inactive", label: "Inactive" },
+    ],
+  },
+  {
+    id: "crop",
+    label: "Primary Crop",
+    options: [
+      { value: "wheat", label: "Wheat" },
+      { value: "rice", label: "Rice" },
+      { value: "bajra", label: "Bajra" },
+      { value: "cotton", label: "Cotton" },
+    ],
+  },
+  {
+    id: "lastDeal",
+    label: "Last Deal",
+    options: [
+      { value: "thisWeek", label: "This Week" },
+      { value: "thisMonth", label: "This Month" },
+      { value: "older", label: "Older" },
+    ],
+  },
+];
 import {
   Dialog,
   DialogContent,
@@ -96,6 +127,7 @@ export default function Farmers() {
             data-testid="input-search-farmers"
           />
         </div>
+        <PageFilter filters={farmerFilters} />
         <ViewToggle />
       </div>
 

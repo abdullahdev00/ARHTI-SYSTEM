@@ -10,7 +10,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { Home, Users, ShoppingCart, FileText, Wallet, Receipt, BarChart3, Settings } from "lucide-react";
+import { Home, Users, ShoppingCart, FileText, Wallet, Receipt, BarChart3, Settings, Package } from "lucide-react";
 import { Link, useLocation } from "wouter";
 import { Badge } from "@/components/ui/badge";
 
@@ -18,6 +18,7 @@ const menuItems = [
   { title: "Dashboard", icon: Home, url: "/", group: "Overview" },
   { title: "Farmers", icon: Users, url: "/farmers", group: "Management" },
   { title: "Purchases", icon: ShoppingCart, url: "/purchases", group: "Management" },
+  { title: "Stock", icon: Package, url: "/stock", group: "Management" },
   { title: "Invoices", icon: FileText, url: "/invoices", group: "Management" },
   { title: "Payments", icon: Wallet, url: "/payments", group: "Finance" },
   { title: "Charges", icon: Receipt, url: "/charges", group: "Finance" },

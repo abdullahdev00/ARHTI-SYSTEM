@@ -22,12 +22,34 @@ export const purchases = pgTable("purchases", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   farmerId: varchar("farmer_id").notNull(),
   crop: text("crop").notNull(),
-  quantity: decimal("quantity", { precision: 10, scale: 2 }).notNull(),
-  rate: decimal("rate", { precision: 10, scale: 2 }).notNull(),
-  total: decimal("total", { precision: 10, scale: 2 }).notNull(),
+  bagType: text("bag_type").notNull(),
+  bagWeight: decimal("bag_weight", { precision: 10, scale: 2 }),
+  numberOfBags: integer("number_of_bags").notNull(),
+  ratePerBag: decimal("rate_per_bag", { precision: 10, scale: 2 }).notNull(),
+  totalAmount: decimal("total_amount", { precision: 10, scale: 2 }).notNull(),
   date: timestamp("date").notNull().defaultNow(),
   paymentStatus: text("payment_status").notNull().default("pending"),
   notes: text("notes"),
+});
+
+export const stock = pgTable("stock", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  crop: text("crop").notNull(),
+  bagType: text("bag_type").notNull(),
+  bagWeight: decimal("bag_weight", { precision: 10, scale: 2 }).notNull(),
+  quantity: integer("quantity").notNull(),
+  buyRate: decimal("buy_rate", { precision: 10, scale: 2 }).notNull(),
+  sellRate: decimal("sell_rate", { precision: 10, scale: 2 }).notNull(),
+  lastUpdated: timestamp("last_updated").notNull().defaultNow(),
+});
+
+export const cropRates = pgTable("crop_rates", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  crop: text("crop").notNull().unique(),
+  rate40kg: decimal("rate_40kg", { precision: 10, scale: 2 }).notNull(),
+  rate60kg: decimal("rate_60kg", { precision: 10, scale: 2 }).notNull(),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });
 
 export const invoices = pgTable("invoices", {
@@ -68,6 +90,8 @@ export const insertUserSchema = createInsertSchema(users).pick({
 
 export const insertFarmerSchema = createInsertSchema(farmers).omit({ id: true });
 export const insertPurchaseSchema = createInsertSchema(purchases).omit({ id: true });
+export const insertStockSchema = createInsertSchema(stock).omit({ id: true });
+export const insertCropRateSchema = createInsertSchema(cropRates).omit({ id: true });
 export const insertInvoiceSchema = createInsertSchema(invoices).omit({ id: true });
 export const insertPaymentSchema = createInsertSchema(payments).omit({ id: true });
 export const insertChargeSchema = createInsertSchema(charges).omit({ id: true });
@@ -80,6 +104,12 @@ export type Farmer = typeof farmers.$inferSelect;
 
 export type InsertPurchase = z.infer<typeof insertPurchaseSchema>;
 export type Purchase = typeof purchases.$inferSelect;
+
+export type InsertStock = z.infer<typeof insertStockSchema>;
+export type Stock = typeof stock.$inferSelect;
+
+export type InsertCropRate = z.infer<typeof insertCropRateSchema>;
+export type CropRate = typeof cropRates.$inferSelect;
 
 export type InsertInvoice = z.infer<typeof insertInvoiceSchema>;
 export type Invoice = typeof invoices.$inferSelect;
