@@ -75,7 +75,7 @@ export default function Invoices() {
       date: invoice.date
     };
     
-    generatePurchaseInvoice(invoiceData, "color");
+    generatePurchaseInvoice(invoiceData, "download");
   };
 
   const filteredInvoices = mockInvoices.filter(invoice => {

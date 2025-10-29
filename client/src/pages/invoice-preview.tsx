@@ -1,16 +1,9 @@
-import { useState } from "react";
 import { useRoute } from "wouter";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Printer, Download, Palette } from "lucide-react";
+import { ArrowLeft, Printer, Download } from "lucide-react";
 import { Link } from "wouter";
 import { Badge } from "@/components/ui/badge";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { generatePurchaseInvoice } from "@/lib/pdf-generator";
 
 const businessData = {
@@ -25,7 +18,6 @@ const businessData = {
 export default function InvoicePreview() {
   const [, params] = useRoute("/invoices/:id");
   const invoiceId = params?.id || "INV-001";
-  const [printMode, setPrintMode] = useState<"color" | "bw">("color");
 
   const invoice = {
     id: invoiceId,
@@ -62,9 +54,7 @@ export default function InvoicePreview() {
     status: "paid",
   };
 
-  const handlePrint = (mode: "color" | "bw") => {
-    setPrintMode(mode);
-    
+  const handlePrint = () => {
     const invoiceData = {
       id: invoice.id,
       farmer: invoice.farmer.name,
@@ -78,7 +68,7 @@ export default function InvoicePreview() {
       date: invoice.date
     };
     
-    generatePurchaseInvoice(invoiceData, mode, businessData);
+    generatePurchaseInvoice(invoiceData, "print", businessData);
   };
 
   const handleDownload = () => {
@@ -95,10 +85,8 @@ export default function InvoicePreview() {
       date: invoice.date
     };
     
-    generatePurchaseInvoice(invoiceData, printMode, businessData);
+    generatePurchaseInvoice(invoiceData, "download", businessData);
   };
-
-  const isColorMode = printMode === "color";
 
   return (
     <div className="min-h-screen bg-background">
@@ -148,34 +136,19 @@ export default function InvoicePreview() {
               </Button>
             </Link>
             <div className="flex gap-2">
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="outline" size="icon" className="rounded-2xl transition-all active:scale-95">
-                    <Palette className="h-4 w-4" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="rounded-2xl">
-                  <DropdownMenuItem onClick={() => handlePrint("color")} className="cursor-pointer">
-                    <Printer className="mr-2 h-4 w-4" />
-                    Print (Color)
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => handlePrint("bw")} className="cursor-pointer">
-                    <Printer className="mr-2 h-4 w-4" />
-                    Print (Black & White)
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
               <Button
                 variant="outline"
                 size="icon"
                 className="rounded-2xl transition-all active:scale-95"
                 onClick={handleDownload}
+                data-testid="button-download-invoice"
               >
                 <Download className="h-4 w-4" />
               </Button>
               <Button
                 className="rounded-2xl transition-all active:scale-95"
-                onClick={() => handlePrint("color")}
+                onClick={handlePrint}
+                data-testid="button-print-invoice"
               >
                 <Printer className="mr-2 h-4 w-4" />
                 Print
@@ -186,7 +159,7 @@ export default function InvoicePreview() {
       </div>
 
       <div className="max-w-4xl mx-auto p-4 md:p-8 print:p-0">
-        <Card className={`rounded-2xl shadow-xl print:shadow-none print:border-none print:rounded-none transition-all duration-300 print:max-w-none ${printMode === "bw" ? "print-bw" : ""}`}>
+        <Card className="rounded-2xl shadow-xl print:shadow-none print:border-none print:rounded-none transition-all duration-300 print:max-w-none">
           <CardContent className="p-8 md:p-12 print:p-8">
             <div className="mb-8 flex items-start justify-between">
               <div>

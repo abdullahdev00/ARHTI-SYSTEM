@@ -34,7 +34,7 @@ const defaultBusinessData: BusinessData = {
 
 export function generatePurchaseInvoice(
   data: InvoiceData,
-  printMode: "color" | "bw" = "color",
+  action: "download" | "print" = "download",
   businessData: BusinessData = defaultBusinessData
 ): void {
   const doc = new jsPDF({
@@ -48,11 +48,10 @@ export function generatePurchaseInvoice(
   const margin = 15;
   const contentWidth = pageWidth - (margin * 2);
   
-  const isColorMode = printMode === "color";
-  const primaryColor: [number, number, number] = isColorMode ? [37, 99, 235] : [0, 0, 0];
-  const textColor: [number, number, number] = isColorMode ? [30, 41, 59] : [0, 0, 0];
-  const mutedColor: [number, number, number] = isColorMode ? [100, 116, 139] : [102, 102, 102];
-  const borderColor: [number, number, number] = isColorMode ? [226, 232, 240] : [204, 204, 204];
+  const primaryColor: [number, number, number] = [37, 99, 235];
+  const textColor: [number, number, number] = [30, 41, 59];
+  const mutedColor: [number, number, number] = [100, 116, 139];
+  const borderColor: [number, number, number] = [226, 232, 240];
 
   let yPosition = margin;
 
@@ -280,5 +279,22 @@ export function generatePurchaseInvoice(
   doc.text('Powered by Mandi Management System', pageWidth / 2, footerY + 15, { align: 'center' });
 
   const filename = `Invoice_${invoiceNumber}_${data.farmer.replace(/\s+/g, '_')}.pdf`;
-  doc.save(filename);
+  
+  if (action === "print") {
+    const pdfBlob = doc.output('blob');
+    const pdfUrl = URL.createObjectURL(pdfBlob);
+    const printWindow = window.open(pdfUrl, '_blank');
+    
+    if (printWindow) {
+      printWindow.onload = () => {
+        printWindow.focus();
+        printWindow.print();
+        URL.revokeObjectURL(pdfUrl);
+      };
+    } else {
+      URL.revokeObjectURL(pdfUrl);
+    }
+  } else {
+    doc.save(filename);
+  }
 }
