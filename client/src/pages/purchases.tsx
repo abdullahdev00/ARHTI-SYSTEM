@@ -7,6 +7,9 @@ import { Plus, Search, ShoppingCart } from "lucide-react";
 import { useViewMode } from "@/hooks/use-view-mode";
 import { ViewToggle } from "@/components/view-toggle";
 import { PageFilter, type FilterOption } from "@/components/page-filter";
+import { Checkbox } from "@/components/ui/checkbox";
+import { getMockData } from "@shared/schema";
+import { generatePurchaseInvoice } from "@/lib/pdf-generator";
 
 const purchaseFilters: FilterOption[] = [
   {
@@ -62,19 +65,6 @@ import {
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 
-const mockPurchases = [
-  { id: "1", farmer: "Ram Singh", crop: "Wheat", quantity: "500", rate: "25", total: "12,500", date: "2024-10-27", status: "paid" },
-  { id: "2", farmer: "Mohan Kumar", crop: "Rice", quantity: "300", rate: "35", total: "10,500", date: "2024-10-26", status: "pending" },
-  { id: "3", farmer: "Vijay Sharma", crop: "Bajra", quantity: "400", rate: "22", total: "8,800", date: "2024-10-25", status: "paid" },
-];
-
-const mockCropRates = [
-  { crop: "Wheat", bag40kg: 1400, bag60kg: 2100 },
-  { crop: "Rice", bag40kg: 2000, bag60kg: 3000 },
-  { crop: "Bajra", bag40kg: 1200, bag60kg: 1800 },
-  { crop: "Cotton", bag40kg: 3000, bag60kg: 4500 },
-];
-
 export default function Purchases() {
   const { viewMode } = useViewMode();
   const [searchQuery, setSearchQuery] = useState("");
@@ -89,6 +79,13 @@ export default function Purchases() {
   const [numberOfBags, setNumberOfBags] = useState("");
   const [ratePerBag, setRatePerBag] = useState("");
   const [purchaseDate, setPurchaseDate] = useState("");
+  const [selectedCharges, setSelectedCharges] = useState<string[]>([]);
+  const [printInvoice, setPrintInvoice] = useState(false);
+  
+  const mockData = getMockData();
+  const availableCharges = mockData.charges;
+  const mockPurchases = mockData.purchases;
+  const mockCropRates = mockData.cropRates;
 
   useEffect(() => {
     const today = new Date().toISOString().split('T')[0];
@@ -124,6 +121,65 @@ export default function Purchases() {
     } else {
       setSelectedCrop(value);
     }
+  };
+
+  const handleChargeToggle = (chargeId: string) => {
+    setSelectedCharges(prev =>
+      prev.includes(chargeId)
+        ? prev.filter(id => id !== chargeId)
+        : [...prev, chargeId]
+    );
+  };
+
+  const calculateTotalCharges = () => {
+    return selectedCharges.reduce((total, chargeId) => {
+      const charge = availableCharges.find(c => c.id === chargeId);
+      return total + (charge?.amount || 0);
+    }, 0);
+  };
+
+  const calculateGrandTotal = () => {
+    const purchaseTotal = numberOfBags && ratePerBag
+      ? parseFloat(numberOfBags) * parseFloat(ratePerBag)
+      : 0;
+    return purchaseTotal + calculateTotalCharges();
+  };
+
+  const handleSubmitPurchase = () => {
+    if (printInvoice) {
+      const purchaseTotal = parseFloat(numberOfBags) * parseFloat(ratePerBag);
+      const selectedChargesData = selectedCharges.map(chargeId => {
+        const charge = availableCharges.find(c => c.id === chargeId);
+        return {
+          title: charge?.title || '',
+          amount: charge?.amount || 0
+        };
+      });
+
+      const invoiceId = `PUR-${Date.now()}`;
+      
+      generatePurchaseInvoice({
+        id: invoiceId,
+        farmer: selectedFarmer || 'Farmer Name',
+        crop: selectedCrop || 'Crop Name',
+        quantity: numberOfBags,
+        rate: ratePerBag,
+        purchaseTotal: purchaseTotal,
+        charges: selectedChargesData,
+        totalCharges: calculateTotalCharges(),
+        grandTotal: calculateGrandTotal(),
+        date: purchaseDate
+      });
+    }
+    
+    setIsDialogOpen(false);
+    setSelectedFarmer("");
+    setSelectedCrop("");
+    setBagType("");
+    setNumberOfBags("");
+    setRatePerBag("");
+    setSelectedCharges([]);
+    setPrintInvoice(false);
   };
 
   return (
@@ -239,17 +295,6 @@ export default function Purchases() {
                 />
               </div>
 
-              {numberOfBags && ratePerBag && (
-                <div className="p-3 bg-primary/5 rounded-2xl border border-primary/20">
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm font-medium">Total Amount:</span>
-                    <span className="text-lg font-bold text-primary">
-                      Rs {(parseFloat(numberOfBags) * parseFloat(ratePerBag)).toLocaleString()}
-                    </span>
-                  </div>
-                </div>
-              )}
-
               <div>
                 <Label htmlFor="date">Purchase Date</Label>
                 <Input 
@@ -262,7 +307,82 @@ export default function Purchases() {
                 />
               </div>
 
-              <Button className="w-full rounded-2xl" data-testid="button-submit-purchase">
+              <div className="space-y-3 pt-2 border-t">
+                <Label>Apply Charges</Label>
+                <div className="space-y-2">
+                  {availableCharges.map((charge) => (
+                    <div key={charge.id} className="flex items-start space-x-3 p-2 rounded-xl hover:bg-muted/50">
+                      <Checkbox
+                        id={`charge-${charge.id}`}
+                        checked={selectedCharges.includes(charge.id)}
+                        onCheckedChange={() => handleChargeToggle(charge.id)}
+                      />
+                      <div className="flex-1">
+                        <label
+                          htmlFor={`charge-${charge.id}`}
+                          className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+                        >
+                          {charge.title}
+                        </label>
+                        <p className="text-xs text-muted-foreground mt-1">Rs {charge.amount.toLocaleString()}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                {selectedCharges.length > 0 && (
+                  <div className="p-3 bg-muted/50 rounded-xl">
+                    <div className="flex justify-between text-sm">
+                      <span className="text-muted-foreground">Total Charges:</span>
+                      <span className="font-medium">Rs {calculateTotalCharges().toLocaleString()}</span>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {(numberOfBags && ratePerBag) && (
+                <div className="p-3 bg-primary/5 rounded-2xl border border-primary/20">
+                  <div className="space-y-2">
+                    <div className="flex justify-between items-center text-sm">
+                      <span className="text-muted-foreground">Purchase Amount:</span>
+                      <span className="font-medium">
+                        Rs {(parseFloat(numberOfBags) * parseFloat(ratePerBag)).toLocaleString()}
+                      </span>
+                    </div>
+                    {selectedCharges.length > 0 && (
+                      <div className="flex justify-between items-center text-sm">
+                        <span className="text-muted-foreground">Charges:</span>
+                        <span className="font-medium">Rs {calculateTotalCharges().toLocaleString()}</span>
+                      </div>
+                    )}
+                    <div className="flex justify-between items-center pt-2 border-t">
+                      <span className="text-sm font-medium">Grand Total:</span>
+                      <span className="text-lg font-bold text-primary">
+                        Rs {calculateGrandTotal().toLocaleString()}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              <div className="flex items-center space-x-2 p-3 rounded-xl bg-muted/30">
+                <Checkbox
+                  id="print-invoice"
+                  checked={printInvoice}
+                  onCheckedChange={(checked) => setPrintInvoice(checked as boolean)}
+                />
+                <label
+                  htmlFor="print-invoice"
+                  className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+                >
+                  Print invoice after adding purchase
+                </label>
+              </div>
+
+              <Button 
+                className="w-full rounded-2xl" 
+                data-testid="button-submit-purchase"
+                onClick={handleSubmitPurchase}
+              >
                 Add Purchase
               </Button>
             </div>

@@ -8,6 +8,7 @@ import { Link } from "wouter";
 import { useViewMode } from "@/hooks/use-view-mode";
 import { ViewToggle } from "@/components/view-toggle";
 import { PageFilter, type FilterOption } from "@/components/page-filter";
+import { getMockData } from "@shared/schema";
 
 const invoiceFilters: FilterOption[] = [
   {
@@ -54,15 +55,12 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-const mockInvoices = [
-  { id: "INV-001", farmer: "Ram Singh", date: "2024-10-27", total: "Rs 12,500", commission: "Rs 625", netPayable: "Rs 11,875", status: "paid" },
-  { id: "INV-002", farmer: "Mohan Kumar", date: "2024-10-26", total: "Rs 10,500", commission: "Rs 525", netPayable: "Rs 9,975", status: "unpaid" },
-  { id: "INV-003", farmer: "Vijay Sharma", date: "2024-10-25", total: "Rs 8,800", commission: "Rs 440", netPayable: "Rs 8,360", status: "paid" },
-];
-
 export default function Invoices() {
   const { viewMode } = useViewMode();
   const [searchQuery, setSearchQuery] = useState("");
+
+  const mockData = getMockData();
+  const mockInvoices = mockData.invoices;
   const [selectedInvoice, setSelectedInvoice] = useState<typeof mockInvoices[0] | null>(null);
 
   const filteredInvoices = mockInvoices.filter(invoice =>

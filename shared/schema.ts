@@ -119,3 +119,98 @@ export type Payment = typeof payments.$inferSelect;
 
 export type InsertCharge = z.infer<typeof insertChargeSchema>;
 export type Charge = typeof charges.$inferSelect;
+
+export interface MockFarmer {
+  id: string;
+  name: string;
+  phone: string;
+  address: string;
+  crop: string;
+  totalAmount: string;
+  status: string;
+  lastDeal: string;
+  notes: string;
+}
+
+export interface MockCropRate {
+  id: string;
+  crop: string;
+  bag40kg: number;
+  bag60kg: number;
+}
+
+export interface MockPurchase {
+  id: string;
+  farmerId: string;
+  farmer: string;
+  crop: string;
+  quantity: string;
+  rate: string;
+  total: string;
+  date: string;
+  status: string;
+}
+
+export interface MockPayment {
+  id: string;
+  name: string;
+  invoice: string;
+  amount: string;
+  type: string;
+  status: string;
+  date: string;
+}
+
+export interface MockStock {
+  id: string;
+  crop: string;
+  bags60kg: {
+    quantity: number;
+    buyRate: number;
+    sellRate: number;
+  };
+  bags40kg: {
+    quantity: number;
+    buyRate: number;
+    sellRate: number;
+  };
+  totalValue: string;
+}
+
+export interface MockCharge {
+  id: string;
+  title: string;
+  amount: number;
+  type: string;
+  lastEdited: string;
+  notes: string;
+}
+
+export interface MockInvoice {
+  id: string;
+  farmerId: string;
+  farmer: string;
+  date: string;
+  total: string;
+  commission: string;
+  netPayable: string;
+  status: string;
+}
+
+export interface MockData {
+  farmers: MockFarmer[];
+  cropRates: MockCropRate[];
+  purchases: MockPurchase[];
+  payments: MockPayment[];
+  stock: MockStock[];
+  charges: MockCharge[];
+  invoices: MockInvoice[];
+}
+
+import mockDataJson from './data.json';
+
+export const mockData: MockData = mockDataJson as MockData;
+
+export function getMockData(): MockData {
+  return mockData;
+}

@@ -6,6 +6,36 @@ import { Badge } from "@/components/ui/badge";
 import { Plus, Search, ArrowDownLeft, ArrowUpRight, Wallet } from "lucide-react";
 import { useViewMode } from "@/hooks/use-view-mode";
 import { ViewToggle } from "@/components/view-toggle";
+import { PageFilter, type FilterOption } from "@/components/page-filter";
+
+const paymentFilters: FilterOption[] = [
+  {
+    id: "type",
+    label: "Payment Type",
+    options: [
+      { value: "incoming", label: "Incoming (Received)" },
+      { value: "outgoing", label: "Outgoing (Paid)" },
+    ],
+  },
+  {
+    id: "status",
+    label: "Payment Status",
+    options: [
+      { value: "completed", label: "Completed" },
+      { value: "pending", label: "Pending" },
+    ],
+  },
+  {
+    id: "date",
+    label: "Date Range",
+    options: [
+      { value: "today", label: "Today" },
+      { value: "thisWeek", label: "This Week" },
+      { value: "thisMonth", label: "This Month" },
+      { value: "older", label: "Older" },
+    ],
+  },
+];
 import {
   Dialog,
   DialogContent,
@@ -30,22 +60,65 @@ import {
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { StatCard } from "@/components/stat-card";
-
-const mockPayments = [
-  { id: "1", name: "Factory A", invoice: "INV-001", amount: "Rs 12,500", type: "incoming", status: "completed", date: "2024-10-27" },
-  { id: "2", name: "Ram Singh", invoice: "INV-001", amount: "Rs 11,875", type: "outgoing", status: "completed", date: "2024-10-27" },
-  { id: "3", name: "Factory B", invoice: "INV-002", amount: "Rs 10,500", type: "incoming", status: "pending", date: "2024-10-26" },
-];
+import { getMockData } from "@shared/schema";
 
 export default function Payments() {
   const { viewMode } = useViewMode();
   const [searchQuery, setSearchQuery] = useState("");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [activeFilters, setActiveFilters] = useState<Record<string, string[]>>({});
 
-  const filteredPayments = mockPayments.filter(payment =>
-    payment.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    payment.invoice.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const mockData = getMockData();
+  const mockPayments = mockData.payments;
+
+  const handleFilterChange = (filters: Record<string, string[]>) => {
+    setActiveFilters(filters);
+  };
+
+  const filteredPayments = mockPayments.filter(payment => {
+    const matchesSearch = payment.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      payment.invoice.toLowerCase().includes(searchQuery.toLowerCase());
+    
+    if (!matchesSearch) return false;
+
+    const typeFilter = activeFilters.type || [];
+    const statusFilter = activeFilters.status || [];
+    const dateFilter = activeFilters.date || [];
+
+    if (typeFilter.length > 0 && !typeFilter.includes(payment.type)) {
+      return false;
+    }
+
+    if (statusFilter.length > 0 && !statusFilter.includes(payment.status)) {
+      return false;
+    }
+
+    if (dateFilter.length > 0) {
+      const paymentDate = new Date(payment.date);
+      const today = new Date();
+      const matchesDateFilter = dateFilter.some(filter => {
+        if (filter === 'today') {
+          return paymentDate.toDateString() === today.toDateString();
+        }
+        if (filter === 'thisWeek') {
+          const weekAgo = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);
+          return paymentDate >= weekAgo;
+        }
+        if (filter === 'thisMonth') {
+          return paymentDate.getMonth() === today.getMonth() && 
+                 paymentDate.getFullYear() === today.getFullYear();
+        }
+        if (filter === 'older') {
+          const monthAgo = new Date(today.getFullYear(), today.getMonth(), 1);
+          return paymentDate < monthAgo;
+        }
+        return true;
+      });
+      if (!matchesDateFilter) return false;
+    }
+
+    return true;
+  });
 
   const receivedFromFactory = "Rs 2,45,000";
   const paidToFarmers = "Rs 2,15,500";
@@ -130,6 +203,7 @@ export default function Payments() {
             data-testid="input-search-payments"
           />
         </div>
+        <PageFilter filters={paymentFilters} onFilterChange={handleFilterChange} />
         <ViewToggle />
       </div>
 

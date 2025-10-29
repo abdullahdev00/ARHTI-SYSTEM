@@ -30,17 +30,15 @@ import {
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
-
-const mockCharges = [
-  { id: "1", title: "Labor Cost", amount: "2,000", lastEdited: "2024-10-27" },
-  { id: "2", title: "Transport Fee", amount: "1,500", lastEdited: "2024-10-26" },
-  { id: "3", title: "Mandi Tax", amount: "800", lastEdited: "2024-10-25" },
-];
+import { getMockData } from "@shared/schema";
 
 export default function Charges() {
   const { viewMode } = useViewMode();
   const [searchQuery, setSearchQuery] = useState("");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+
+  const mockData = getMockData();
+  const mockCharges = mockData.charges;
 
   const filteredCharges = mockCharges.filter(charge =>
     charge.title.toLowerCase().includes(searchQuery.toLowerCase())
@@ -112,7 +110,7 @@ export default function Charges() {
                 <div className="space-y-2 text-sm">
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Amount:</span>
-                    <span className="font-medium">Rs {charge.amount}</span>
+                    <span className="font-medium">Rs {charge.amount.toLocaleString()}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Last Edited:</span>
@@ -137,7 +135,7 @@ export default function Charges() {
               {filteredCharges.map((charge) => (
                 <TableRow key={charge.id} data-testid={`row-charge-${charge.id}`}>
                   <TableCell className="font-medium">{charge.title}</TableCell>
-                  <TableCell className="font-medium">Rs {charge.amount}</TableCell>
+                  <TableCell className="font-medium">Rs {charge.amount.toLocaleString()}</TableCell>
                   <TableCell>{new Date(charge.lastEdited).toLocaleDateString("en-IN")}</TableCell>
                 </TableRow>
               ))}

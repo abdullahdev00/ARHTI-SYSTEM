@@ -7,6 +7,7 @@ import { Plus, Search } from "lucide-react";
 import { useViewMode } from "@/hooks/use-view-mode";
 import { ViewToggle } from "@/components/view-toggle";
 import { PageFilter, type FilterOption } from "@/components/page-filter";
+import { getMockData } from "@shared/schema";
 
 const farmerFilters: FilterOption[] = [
   {
@@ -55,17 +56,13 @@ import {
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 
-const mockFarmers = [
-  { id: "1", name: "Ram Singh", phone: "03001234567", crop: "Wheat", totalAmount: "Rs 45,000", status: "active", lastDeal: "2 days ago" },
-  { id: "2", name: "Mohan Kumar", phone: "03001234568", crop: "Rice", totalAmount: "Rs 38,500", status: "active", lastDeal: "5 days ago" },
-  { id: "3", name: "Vijay Sharma", phone: "03001234569", crop: "Bajra", totalAmount: "Rs 32,000", status: "active", lastDeal: "1 week ago" },
-  { id: "4", name: "Suresh Patel", phone: "03001234570", crop: "Cotton", totalAmount: "Rs 28,000", status: "inactive", lastDeal: "3 weeks ago" },
-];
-
 export default function Farmers() {
   const { viewMode } = useViewMode();
   const [searchQuery, setSearchQuery] = useState("");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+
+  const mockData = getMockData();
+  const mockFarmers = mockData.farmers;
 
   const filteredFarmers = mockFarmers.filter(farmer =>
     farmer.name.toLowerCase().includes(searchQuery.toLowerCase()) ||

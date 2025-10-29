@@ -7,6 +7,7 @@ import { Plus, Search, Package } from "lucide-react";
 import { useViewMode } from "@/hooks/use-view-mode";
 import { ViewToggle } from "@/components/view-toggle";
 import { PageFilter, type FilterOption } from "@/components/page-filter";
+import { getMockData } from "@shared/schema";
 
 const stockFilters: FilterOption[] = [
   {
@@ -61,41 +62,13 @@ import {
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 
-const mockStock = [
-  { 
-    id: "1", 
-    crop: "Wheat", 
-    bags60kg: { quantity: 490, buyRate: 2100, sellRate: 2200 },
-    bags40kg: { quantity: 120, buyRate: 1400, sellRate: 1500 },
-    totalValue: "Rs 12,48,000"
-  },
-  { 
-    id: "2", 
-    crop: "Rice", 
-    bags60kg: { quantity: 350, buyRate: 3000, sellRate: 3150 },
-    bags40kg: { quantity: 80, buyRate: 2000, sellRate: 2100 },
-    totalValue: "Rs 11,65,000"
-  },
-  { 
-    id: "3", 
-    crop: "Bajra", 
-    bags60kg: { quantity: 280, buyRate: 1800, sellRate: 1900 },
-    bags40kg: { quantity: 60, buyRate: 1200, sellRate: 1300 },
-    totalValue: "Rs 5,76,000"
-  },
-  { 
-    id: "4", 
-    crop: "Cotton", 
-    bags60kg: { quantity: 200, buyRate: 4500, sellRate: 4700 },
-    bags40kg: { quantity: 50, buyRate: 3000, sellRate: 3150 },
-    totalValue: "Rs 10,57,500"
-  },
-];
-
 export default function Stock() {
   const { viewMode } = useViewMode();
   const [searchQuery, setSearchQuery] = useState("");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+
+  const mockData = getMockData();
+  const mockStock = mockData.stock;
 
   const filteredStock = mockStock.filter(item =>
     item.crop.toLowerCase().includes(searchQuery.toLowerCase())
