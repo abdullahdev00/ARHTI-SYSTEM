@@ -1,87 +1,155 @@
+import { useState } from "react";
 import { useRoute } from "wouter";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Share2, Printer, Download } from "lucide-react";
+import { ArrowLeft, Printer, Download, Palette } from "lucide-react";
 import { Link } from "wouter";
 import { Badge } from "@/components/ui/badge";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+
+const businessData = {
+  fullName: "Muhammad Ali",
+  email: "muhammad.ali@business.pk",
+  phone: "+92 300 1234567",
+  businessName: "Ali Trading Company",
+  address: "Mandi Road, Muzaffargarh, Punjab",
+  registrationNo: "REG-2024-001",
+};
 
 export default function InvoicePreview() {
   const [, params] = useRoute("/invoices/:id");
   const invoiceId = params?.id || "INV-001";
+  const [printMode, setPrintMode] = useState<"color" | "bw">("color");
 
-  // Mock data - would come from backend in real app
   const invoice = {
     id: invoiceId,
+    invoiceNumber: `RBZFBV-${Math.floor(Math.random() * 100000).toString().padStart(5, '0')}`,
     date: "2024-10-27",
+    dueDate: "2024-11-25",
     farmer: {
       name: "Ram Singh",
       phone: "03001234567",
       address: "Village Kot Addu, Muzaffargarh, Punjab",
     },
     items: [
-      { crop: "Wheat", quantity: 500, rate: 25, total: 12500 },
-      { crop: "Rice", quantity: 200, rate: 35, total: 7000 },
+      { 
+        description: "Wheat (40kg bags)", 
+        dateRange: "Oct 20 - Oct 27, 2024",
+        quantity: 500, 
+        rate: 25, 
+        amount: 12500,
+        discount: 0
+      },
+      { 
+        description: "Rice (60kg bags)", 
+        dateRange: "Oct 20 - Oct 27, 2024",
+        quantity: 200, 
+        rate: 35, 
+        amount: 7000,
+        discount: 0
+      },
     ],
     subtotal: 19500,
     commission: 975,
     charges: 500,
-    netPayable: 18025,
+    amountDue: 18025,
     status: "paid",
   };
 
-  const handlePrint = () => {
-    window.print();
-  };
-
-  const handleShare = () => {
-    if (navigator.share) {
-      navigator.share({
-        title: `Invoice ${invoice.id}`,
-        text: `Invoice for ${invoice.farmer.name}`,
-        url: window.location.href,
-      });
-    } else {
-      console.log("Share functionality triggered");
-    }
+  const handlePrint = (mode: "color" | "bw") => {
+    setPrintMode(mode);
+    setTimeout(() => {
+      window.print();
+    }, 100);
   };
 
   const handleDownload = () => {
     console.log("Download PDF triggered");
   };
 
+  const isColorMode = printMode === "color";
+
   return (
     <div className="min-h-screen bg-background">
+      <style>{`
+        @media print {
+          body { 
+            background: white !important;
+          }
+          .print\\:hidden {
+            display: none !important;
+          }
+          .print\\:block {
+            display: block !important;
+          }
+          .print\\:border-none {
+            border: none !important;
+          }
+          .print\\:shadow-none {
+            box-shadow: none !important;
+          }
+          .print\\:m-0 {
+            margin: 0 !important;
+          }
+          .print\\:p-8 {
+            padding: 2rem !important;
+          }
+          .print\\:max-w-none {
+            max-width: none !important;
+          }
+          .print-bw * {
+            color: black !important;
+            background: white !important;
+            border-color: #e5e7eb !important;
+          }
+          .print-bw .watermark {
+            color: #9ca3af !important;
+          }
+        }
+      `}</style>
+
       <div className="print:hidden sticky top-0 z-50 bg-background border-b backdrop-blur-lg">
         <div className="max-w-4xl mx-auto px-4 py-4">
           <div className="flex items-center justify-between gap-4">
             <Link href="/invoices">
-              <Button variant="ghost" size="icon" className="rounded-2xl" data-testid="button-back">
+              <Button variant="ghost" size="icon" className="rounded-2xl">
                 <ArrowLeft className="h-5 w-5" />
               </Button>
             </Link>
             <div className="flex gap-2">
-              <Button
-                variant="outline"
-                size="icon"
-                className="rounded-2xl"
-                onClick={handleShare}
-                data-testid="button-share"
-              >
-                <Share2 className="h-4 w-4" />
-              </Button>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" size="icon" className="rounded-2xl">
+                    <Palette className="h-4 w-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="rounded-2xl">
+                  <DropdownMenuItem onClick={() => handlePrint("color")} className="cursor-pointer">
+                    <Printer className="mr-2 h-4 w-4" />
+                    Print (Color)
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => handlePrint("bw")} className="cursor-pointer">
+                    <Printer className="mr-2 h-4 w-4" />
+                    Print (Black & White)
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
               <Button
                 variant="outline"
                 size="icon"
                 className="rounded-2xl"
                 onClick={handleDownload}
-                data-testid="button-download"
               >
                 <Download className="h-4 w-4" />
               </Button>
               <Button
                 className="rounded-2xl"
-                onClick={handlePrint}
-                data-testid="button-print"
+                onClick={() => handlePrint("color")}
               >
                 <Printer className="mr-2 h-4 w-4" />
                 Print
@@ -91,109 +159,148 @@ export default function InvoicePreview() {
         </div>
       </div>
 
-      <div className="max-w-4xl mx-auto p-4 md:p-8 animate-fade-in-up print:p-0">
-        <Card className="rounded-2xl shadow-xl print:shadow-none print:rounded-none transition-all duration-300 print:max-w-none print:w-[8.5in] print:min-h-[11in] print:mx-auto" id="invoice-content">
-          <CardHeader className="border-b pb-6">
-            <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-6">
+      <div className="max-w-4xl mx-auto p-4 md:p-8 print:p-0">
+        <Card className={`rounded-2xl shadow-xl print:shadow-none print:border-none print:rounded-none transition-all duration-300 print:max-w-none ${printMode === "bw" ? "print-bw" : ""}`}>
+          <CardContent className="p-8 md:p-12 print:p-8">
+            <div className="mb-8 flex items-start justify-between">
               <div>
-                <h1 className="text-3xl font-bold mb-2">Invoice</h1>
-                <p className="text-lg font-medium text-primary">{invoice.id}</p>
-                <p className="text-sm text-muted-foreground mt-1">
-                  Date: {new Date(invoice.date).toLocaleDateString("en-PK", {
-                    year: "numeric",
-                    month: "long",
-                    day: "numeric",
-                  })}
-                </p>
+                <h1 className="text-2xl md:text-3xl font-bold mb-2">{businessData.businessName}</h1>
+                <div className="text-sm space-y-1">
+                  <p className="font-medium">{businessData.fullName}</p>
+                  <p className="text-muted-foreground">{businessData.email}</p>
+                  <p className="text-muted-foreground">{businessData.phone}</p>
+                  <p className="text-muted-foreground mt-2">{businessData.address}</p>
+                  <p className="text-muted-foreground">Registration: {businessData.registrationNo}</p>
+                </div>
               </div>
               <div className="text-right">
-                <h2 className="font-bold text-lg mb-2">Arhti Business</h2>
-                <p className="text-sm text-muted-foreground">Mandi System</p>
-                <p className="text-sm text-muted-foreground">Punjab, Pakistan</p>
-              </div>
-            </div>
-          </CardHeader>
-
-          <CardContent className="pt-6">
-            <div className="mb-8">
-              <h3 className="font-semibold text-lg mb-3">Billed To:</h3>
-              <div className="bg-muted p-4 rounded-2xl">
-                <p className="font-medium text-lg">{invoice.farmer.name}</p>
-                <p className="text-sm text-muted-foreground mt-1">{invoice.farmer.phone}</p>
-                <p className="text-sm text-muted-foreground">{invoice.farmer.address}</p>
+                <h2 className="text-3xl font-bold text-muted-foreground">INVOICE</h2>
               </div>
             </div>
 
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+              <div>
+                <h3 className="text-sm font-semibold mb-2">Bill to:</h3>
+                <div className="text-sm">
+                  <p className="font-medium">{invoice.farmer.name}</p>
+                  <p className="text-muted-foreground">{invoice.farmer.phone}</p>
+                  <p className="text-muted-foreground">{invoice.farmer.address}</p>
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <div className="flex justify-between text-sm">
+                  <span className="text-muted-foreground">Invoice number</span>
+                  <span className="font-medium">{invoice.invoiceNumber}</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-muted-foreground">Invoice date</span>
+                  <span className="font-medium">
+                    {new Date(invoice.date).toLocaleDateString("en-PK", {
+                      year: "numeric",
+                      month: "short",
+                      day: "numeric",
+                    })}
+                  </span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-muted-foreground">Due date</span>
+                  <span className="font-medium">
+                    {new Date(invoice.dueDate).toLocaleDateString("en-PK", {
+                      year: "numeric",
+                      month: "short",
+                      day: "numeric",
+                    })}
+                  </span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-muted-foreground font-semibold">Amount due</span>
+                  <span className="font-bold">Rs {invoice.amountDue.toLocaleString()}</span>
+                </div>
+              </div>
+            </div>
+
             <div className="mb-8">
-              <h3 className="font-semibold text-lg mb-4">Items</h3>
-              <div className="border rounded-2xl overflow-hidden">
-                <table className="w-full">
-                  <thead className="bg-muted">
-                    <tr>
-                      <th className="text-left p-4 font-semibold">Crop</th>
-                      <th className="text-right p-4 font-semibold">Quantity (kg)</th>
-                      <th className="text-right p-4 font-semibold">Rate/kg</th>
-                      <th className="text-right p-4 font-semibold">Total</th>
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b-2">
+                    <th className="text-left py-3 text-sm font-semibold text-muted-foreground">Description</th>
+                    <th className="text-right py-3 text-sm font-semibold text-muted-foreground">Quantity</th>
+                    <th className="text-right py-3 text-sm font-semibold text-muted-foreground">Rate</th>
+                    <th className="text-right py-3 text-sm font-semibold text-muted-foreground">Amount</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {invoice.items.map((item, idx) => (
+                    <tr key={idx} className="border-b">
+                      <td className="py-4">
+                        <div>
+                          <p className="font-medium text-sm">{item.description}</p>
+                          <p className="text-xs text-muted-foreground">{item.dateRange}</p>
+                        </div>
+                      </td>
+                      <td className="py-4 text-right text-sm">{item.quantity.toLocaleString()}</td>
+                      <td className="py-4 text-right text-sm">Rs {item.rate.toLocaleString()}</td>
+                      <td className="py-4 text-right text-sm font-medium">
+                        Rs {item.amount.toLocaleString()}
+                      </td>
                     </tr>
-                  </thead>
-                  <tbody>
-                    {invoice.items.map((item, idx) => (
-                      <tr key={idx} className="border-t">
-                        <td className="p-4 font-medium">{item.crop}</td>
-                        <td className="p-4 text-right">{item.quantity.toLocaleString()}</td>
-                        <td className="p-4 text-right">{item.rate.toLocaleString()}</td>
-                        <td className="p-4 text-right font-medium">
-                          Rs {item.total.toLocaleString()}
+                  ))}
+                  {invoice.items.map((item, idx) => 
+                    item.discount > 0 ? (
+                      <tr key={`discount-${idx}`}>
+                        <td className="py-2 pl-6 text-sm text-muted-foreground" colSpan={3}>
+                          Discount
+                        </td>
+                        <td className="py-2 text-right text-sm">
+                          Rs {item.discount.toLocaleString()}
                         </td>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+                    ) : null
+                  )}
+                </tbody>
+              </table>
             </div>
 
-            <div className="flex justify-end">
-              <div className="w-full md:w-80 space-y-3">
-                <div className="flex justify-between text-sm">
-                  <span className="text-muted-foreground">Subtotal:</span>
+            <div className="flex justify-end mb-8">
+              <div className="w-full md:w-80 space-y-2">
+                <div className="flex justify-between text-sm py-2">
+                  <span className="text-muted-foreground">Subtotal</span>
                   <span className="font-medium">Rs {invoice.subtotal.toLocaleString()}</span>
                 </div>
-                <div className="flex justify-between text-sm">
-                  <span className="text-muted-foreground">Commission (5%):</span>
-                  <span className="font-medium text-red-600 dark:text-red-400">
-                    -Rs {invoice.commission.toLocaleString()}
-                  </span>
-                </div>
-                <div className="flex justify-between text-sm">
-                  <span className="text-muted-foreground">Charges:</span>
-                  <span className="font-medium text-red-600 dark:text-red-400">
-                    -Rs {invoice.charges.toLocaleString()}
-                  </span>
-                </div>
-                <div className="border-t pt-3 flex justify-between items-center">
-                  <span className="text-lg font-bold">Net Payable:</span>
-                  <span className="text-2xl font-bold text-primary">
-                    Rs {invoice.netPayable.toLocaleString()}
-                  </span>
-                </div>
-                <div className="flex justify-end">
-                  <Badge
-                    variant={invoice.status === "paid" ? "default" : "secondary"}
-                    className="rounded-2xl text-sm px-4 py-1"
-                  >
-                    {invoice.status.toUpperCase()}
-                  </Badge>
+                <div className="flex justify-between text-sm py-2 border-t">
+                  <span className="font-semibold">Amount due</span>
+                  <span className="font-bold">Rs {invoice.amountDue.toLocaleString()}</span>
                 </div>
               </div>
             </div>
 
-            <div className="mt-12 pt-6 border-t">
-              <p className="text-sm text-muted-foreground text-center">
-                Thank you for your business!
-              </p>
-              <p className="text-xs text-muted-foreground text-center mt-2">
-                This is a computer-generated invoice and does not require a signature.
-              </p>
+            <div className="mb-8">
+              <p className="text-sm font-semibold mb-2">Memo:</p>
+              <div className="min-h-[60px] border-b"></div>
+            </div>
+
+            <div className="mt-16 pt-6 border-t">
+              <div className="watermark text-center text-xs text-muted-foreground space-y-1">
+                <p className="font-semibold">{businessData.businessName} - POS System</p>
+                <p>Contact: {businessData.email} | {businessData.phone}</p>
+                <p className="text-xs">Powered by Mandi Management System</p>
+              </div>
+            </div>
+
+            <div className="print:hidden mt-6 flex items-center justify-between p-4 bg-muted rounded-2xl">
+              <div className="flex items-center gap-2">
+                <span className="text-sm font-medium">Status:</span>
+                <Badge
+                  variant={invoice.status === "paid" ? "default" : "secondary"}
+                  className="rounded-full"
+                >
+                  {invoice.status.toUpperCase()}
+                </Badge>
+              </div>
+              <div className="text-sm text-muted-foreground">
+                Page 1 of 1
+              </div>
             </div>
           </CardContent>
         </Card>
