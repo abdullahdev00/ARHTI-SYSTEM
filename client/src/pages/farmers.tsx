@@ -19,16 +19,6 @@ const farmerFilters: FilterOption[] = [
     ],
   },
   {
-    id: "crop",
-    label: "Primary Crop",
-    options: [
-      { value: "wheat", label: "Wheat" },
-      { value: "rice", label: "Rice" },
-      { value: "bajra", label: "Bajra" },
-      { value: "cotton", label: "Cotton" },
-    ],
-  },
-  {
     id: "lastDeal",
     label: "Last Deal",
     options: [
@@ -60,14 +50,38 @@ export default function Farmers() {
   const { viewMode } = useViewMode();
   const [searchQuery, setSearchQuery] = useState("");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [activeFilters, setActiveFilters] = useState<Record<string, string[]>>({});
 
   const mockData = getMockData();
   const mockFarmers = mockData.farmers;
 
-  const filteredFarmers = mockFarmers.filter(farmer =>
-    farmer.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    farmer.crop.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const filteredFarmers = mockFarmers.filter(farmer => {
+    const matchesSearch = farmer.name.toLowerCase().includes(searchQuery.toLowerCase());
+    
+    let matchesFilters = true;
+    
+    if (activeFilters.status && activeFilters.status.length > 0) {
+      matchesFilters = matchesFilters && activeFilters.status.includes(farmer.status);
+    }
+    
+    if (activeFilters.lastDeal && activeFilters.lastDeal.length > 0) {
+      const lastDealMatch = activeFilters.lastDeal.some(filter => {
+        if (filter === 'thisWeek') {
+          return farmer.lastDeal.includes('day') || farmer.lastDeal.includes('yesterday');
+        }
+        if (filter === 'thisMonth') {
+          return farmer.lastDeal.includes('week') || farmer.lastDeal.includes('day');
+        }
+        if (filter === 'older') {
+          return farmer.lastDeal.includes('month') || farmer.lastDeal.includes('year');
+        }
+        return true;
+      });
+      matchesFilters = matchesFilters && lastDealMatch;
+    }
+    
+    return matchesSearch && matchesFilters;
+  });
 
   return (
     <div className="space-y-6">
@@ -80,7 +94,7 @@ export default function Farmers() {
               Add Farmer
             </Button>
           </DialogTrigger>
-          <DialogContent className="rounded-2xl sm:max-w-md">
+          <DialogContent className="rounded-2xl sm:max-w-md max-h-[90vh] sm:max-h-fit">
             <DialogHeader>
               <DialogTitle>Add New Farmer</DialogTitle>
             </DialogHeader>
@@ -96,10 +110,6 @@ export default function Farmers() {
               <div>
                 <Label htmlFor="address">Address</Label>
                 <Input id="address" placeholder="Enter address" className="rounded-2xl" data-testid="input-farmer-address" />
-              </div>
-              <div>
-                <Label htmlFor="crop">Primary Crop</Label>
-                <Input id="crop" placeholder="e.g., Wheat, Rice" className="rounded-2xl" data-testid="input-farmer-crop" />
               </div>
               <div>
                 <Label htmlFor="notes">Notes</Label>
@@ -124,7 +134,7 @@ export default function Farmers() {
             data-testid="input-search-farmers"
           />
         </div>
-        <PageFilter filters={farmerFilters} />
+        <PageFilter filters={farmerFilters} onFilterChange={setActiveFilters} />
         <ViewToggle />
       </div>
 
@@ -155,10 +165,6 @@ export default function Farmers() {
                     <span className="font-medium">{farmer.phone}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-muted-foreground">Crop:</span>
-                    <span className="font-medium">{farmer.crop}</span>
-                  </div>
-                  <div className="flex justify-between">
                     <span className="text-muted-foreground">Total Amount:</span>
                     <span className="font-medium">{farmer.totalAmount}</span>
                   </div>
@@ -178,7 +184,6 @@ export default function Farmers() {
               <TableRow>
                 <TableHead>Name</TableHead>
                 <TableHead>Phone</TableHead>
-                <TableHead>Crop</TableHead>
                 <TableHead>Total Amount</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead>Last Deal</TableHead>
@@ -189,7 +194,6 @@ export default function Farmers() {
                 <TableRow key={farmer.id} data-testid={`row-farmer-${farmer.id}`}>
                   <TableCell className="font-medium">{farmer.name}</TableCell>
                   <TableCell>{farmer.phone}</TableCell>
-                  <TableCell>{farmer.crop}</TableCell>
                   <TableCell>{farmer.totalAmount}</TableCell>
                   <TableCell>
                     <Badge

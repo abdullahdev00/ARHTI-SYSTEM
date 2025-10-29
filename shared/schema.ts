@@ -125,7 +125,6 @@ export interface MockFarmer {
   name: string;
   phone: string;
   address: string;
-  crop: string;
   totalAmount: string;
   status: string;
   lastDeal: string;

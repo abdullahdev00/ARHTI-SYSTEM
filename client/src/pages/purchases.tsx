@@ -71,6 +71,7 @@ export default function Purchases() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isFarmerDialogOpen, setIsFarmerDialogOpen] = useState(false);
   const [isRateDialogOpen, setIsRateDialogOpen] = useState(false);
+  const [activeFilters, setActiveFilters] = useState<Record<string, string[]>>({});
   
   const [selectedFarmer, setSelectedFarmer] = useState("");
   const [selectedCrop, setSelectedCrop] = useState("");
@@ -90,6 +91,11 @@ export default function Purchases() {
   useEffect(() => {
     const today = new Date().toISOString().split('T')[0];
     setPurchaseDate(today);
+    
+    const savedCharges = localStorage.getItem('selectedCharges');
+    if (savedCharges) {
+      setSelectedCharges(JSON.parse(savedCharges));
+    }
   }, []);
 
   useEffect(() => {
@@ -102,10 +108,48 @@ export default function Purchases() {
     }
   }, [selectedCrop, bagType]);
 
-  const filteredPurchases = mockPurchases.filter(purchase =>
-    purchase.farmer.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    purchase.crop.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const filteredPurchases = mockPurchases.filter(purchase => {
+    const matchesSearch = purchase.farmer.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      purchase.crop.toLowerCase().includes(searchQuery.toLowerCase());
+    
+    let matchesFilters = true;
+    
+    if (activeFilters.crop && activeFilters.crop.length > 0) {
+      matchesFilters = matchesFilters && activeFilters.crop.some(crop => 
+        purchase.crop.toLowerCase() === crop.toLowerCase()
+      );
+    }
+    
+    if (activeFilters.status && activeFilters.status.length > 0) {
+      matchesFilters = matchesFilters && activeFilters.status.includes(purchase.status);
+    }
+    
+    if (activeFilters.date && activeFilters.date.length > 0) {
+      const purchaseDate = new Date(purchase.date);
+      const today = new Date();
+      const matchesDateFilter = activeFilters.date.some(filter => {
+        if (filter === 'today') {
+          return purchaseDate.toDateString() === today.toDateString();
+        }
+        if (filter === 'thisWeek') {
+          const weekAgo = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);
+          return purchaseDate >= weekAgo;
+        }
+        if (filter === 'thisMonth') {
+          return purchaseDate.getMonth() === today.getMonth() && 
+                 purchaseDate.getFullYear() === today.getFullYear();
+        }
+        if (filter === 'older') {
+          const monthAgo = new Date(today.getFullYear(), today.getMonth(), 1);
+          return purchaseDate < monthAgo;
+        }
+        return true;
+      });
+      matchesFilters = matchesFilters && matchesDateFilter;
+    }
+    
+    return matchesSearch && matchesFilters;
+  });
 
   const handleFarmerChange = (value: string) => {
     if (value === "add_new") {
@@ -124,11 +168,19 @@ export default function Purchases() {
   };
 
   const handleChargeToggle = (chargeId: string) => {
-    setSelectedCharges(prev =>
-      prev.includes(chargeId)
+    setSelectedCharges(prev => {
+      const newCharges = prev.includes(chargeId)
         ? prev.filter(id => id !== chargeId)
-        : [...prev, chargeId]
-    );
+        : [...prev, chargeId];
+      localStorage.setItem('selectedCharges', JSON.stringify(newCharges));
+      return newCharges;
+    });
+  };
+
+  const handleApplyAllCharges = () => {
+    const allChargeIds = availableCharges.map(charge => charge.id);
+    setSelectedCharges(allChargeIds);
+    localStorage.setItem('selectedCharges', JSON.stringify(allChargeIds));
   };
 
   const calculateTotalCharges = () => {
@@ -143,6 +195,16 @@ export default function Purchases() {
       ? parseFloat(numberOfBags) * parseFloat(ratePerBag)
       : 0;
     return purchaseTotal + calculateTotalCharges();
+  };
+
+  const isFormValid = () => {
+    if (!selectedFarmer || !selectedCrop || !bagType || !numberOfBags || !ratePerBag) {
+      return false;
+    }
+    if (bagType === "custom" && !customBagWeight) {
+      return false;
+    }
+    return true;
   };
 
   const handleSubmitPurchase = () => {
@@ -178,7 +240,6 @@ export default function Purchases() {
     setBagType("");
     setNumberOfBags("");
     setRatePerBag("");
-    setSelectedCharges([]);
     setPrintInvoice(false);
   };
 
@@ -193,11 +254,11 @@ export default function Purchases() {
               Add Purchase
             </Button>
           </DialogTrigger>
-          <DialogContent className="rounded-2xl sm:max-w-md">
+          <DialogContent className="rounded-2xl sm:max-w-md max-h-[90vh] sm:max-h-fit">
             <DialogHeader>
               <DialogTitle>Add New Purchase</DialogTitle>
             </DialogHeader>
-            <div className="space-y-4 max-h-[70vh] overflow-y-auto pr-2">
+            <div className="space-y-4 max-h-[calc(90vh-8rem)] sm:max-h-[70vh] overflow-y-auto pr-2">
               <div>
                 <Label htmlFor="farmer">Select Farmer</Label>
                 <Select value={selectedFarmer} onValueChange={handleFarmerChange}>
@@ -308,7 +369,18 @@ export default function Purchases() {
               </div>
 
               <div className="space-y-3 pt-2 border-t">
-                <Label>Apply Charges</Label>
+                <div className="flex items-center justify-between">
+                  <Label>Apply Charges</Label>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    className="rounded-2xl h-7 text-xs"
+                    onClick={handleApplyAllCharges}
+                  >
+                    Apply All
+                  </Button>
+                </div>
                 <div className="space-y-2">
                   {availableCharges.map((charge) => (
                     <div key={charge.id} className="flex items-start space-x-3 p-2 rounded-xl hover:bg-muted/50">
@@ -382,6 +454,7 @@ export default function Purchases() {
                 className="w-full rounded-2xl" 
                 data-testid="button-submit-purchase"
                 onClick={handleSubmitPurchase}
+                disabled={!isFormValid()}
               >
                 Add Purchase
               </Button>
@@ -391,7 +464,7 @@ export default function Purchases() {
 
         {/* Add Farmer Dialog */}
         <Dialog open={isFarmerDialogOpen} onOpenChange={setIsFarmerDialogOpen}>
-          <DialogContent className="rounded-2xl sm:max-w-md">
+          <DialogContent className="rounded-2xl sm:max-w-md max-h-[90vh] sm:max-h-fit">
             <DialogHeader>
               <DialogTitle>Add New Farmer</DialogTitle>
             </DialogHeader>
@@ -420,7 +493,7 @@ export default function Purchases() {
 
         {/* Add Crop Rate Dialog */}
         <Dialog open={isRateDialogOpen} onOpenChange={setIsRateDialogOpen}>
-          <DialogContent className="rounded-2xl sm:max-w-md">
+          <DialogContent className="rounded-2xl sm:max-w-md max-h-[90vh] sm:max-h-fit">
             <DialogHeader>
               <DialogTitle>Add Crop Rate</DialogTitle>
             </DialogHeader>
@@ -459,7 +532,7 @@ export default function Purchases() {
             data-testid="input-search-purchases"
           />
         </div>
-        <PageFilter filters={purchaseFilters} />
+        <PageFilter filters={purchaseFilters} onFilterChange={setActiveFilters} />
         <ViewToggle />
       </div>
 

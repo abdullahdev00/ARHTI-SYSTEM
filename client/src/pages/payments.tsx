@@ -135,7 +135,7 @@ export default function Payments() {
               Add Payment
             </Button>
           </DialogTrigger>
-          <DialogContent className="rounded-2xl sm:max-w-md">
+          <DialogContent className="rounded-2xl sm:max-w-md max-h-[90vh] sm:max-h-fit">
             <DialogHeader>
               <DialogTitle>Add New Payment</DialogTitle>
             </DialogHeader>

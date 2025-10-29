@@ -66,13 +66,44 @@ export default function Stock() {
   const { viewMode } = useViewMode();
   const [searchQuery, setSearchQuery] = useState("");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [activeFilters, setActiveFilters] = useState<Record<string, string[]>>({});
 
   const mockData = getMockData();
   const mockStock = mockData.stock;
 
-  const filteredStock = mockStock.filter(item =>
-    item.crop.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const filteredStock = mockStock.filter(item => {
+    const matchesSearch = item.crop.toLowerCase().includes(searchQuery.toLowerCase());
+    
+    let matchesFilters = true;
+    
+    if (activeFilters.crop && activeFilters.crop.length > 0) {
+      matchesFilters = matchesFilters && activeFilters.crop.some(crop => 
+        item.crop.toLowerCase() === crop.toLowerCase()
+      );
+    }
+    
+    if (activeFilters.stockLevel && activeFilters.stockLevel.length > 0) {
+      const totalBags = item.bags60kg.quantity + item.bags40kg.quantity;
+      const matchesStockLevel = activeFilters.stockLevel.some(level => {
+        if (level === 'low') return totalBags < 100;
+        if (level === 'medium') return totalBags >= 100 && totalBags <= 300;
+        if (level === 'high') return totalBags > 300;
+        return true;
+      });
+      matchesFilters = matchesFilters && matchesStockLevel;
+    }
+    
+    if (activeFilters.bagType && activeFilters.bagType.length > 0) {
+      const matchesBagType = activeFilters.bagType.some(bagType => {
+        if (bagType === '40kg') return item.bags40kg.quantity > 0;
+        if (bagType === '60kg') return item.bags60kg.quantity > 0;
+        return true;
+      });
+      matchesFilters = matchesFilters && matchesBagType;
+    }
+    
+    return matchesSearch && matchesFilters;
+  });
 
   return (
     <div className="space-y-6">
@@ -85,7 +116,7 @@ export default function Stock() {
               Add Stock
             </Button>
           </DialogTrigger>
-          <DialogContent className="rounded-2xl sm:max-w-md">
+          <DialogContent className="rounded-2xl sm:max-w-md max-h-[90vh] sm:max-h-fit">
             <DialogHeader>
               <DialogTitle>Add Stock Entry</DialogTitle>
             </DialogHeader>
@@ -138,7 +169,7 @@ export default function Stock() {
             data-testid="input-search-stock"
           />
         </div>
-        <PageFilter filters={stockFilters} />
+        <PageFilter filters={stockFilters} onFilterChange={setActiveFilters} />
         <ViewToggle />
       </div>
 

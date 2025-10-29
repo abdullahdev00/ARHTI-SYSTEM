@@ -58,15 +58,59 @@ import {
 export default function Invoices() {
   const { viewMode } = useViewMode();
   const [searchQuery, setSearchQuery] = useState("");
+  const [activeFilters, setActiveFilters] = useState<Record<string, string[]>>({});
 
   const mockData = getMockData();
   const mockInvoices = mockData.invoices;
   const [selectedInvoice, setSelectedInvoice] = useState<typeof mockInvoices[0] | null>(null);
 
-  const filteredInvoices = mockInvoices.filter(invoice =>
-    invoice.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    invoice.farmer.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const filteredInvoices = mockInvoices.filter(invoice => {
+    const matchesSearch = invoice.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      invoice.farmer.toLowerCase().includes(searchQuery.toLowerCase());
+    
+    let matchesFilters = true;
+    
+    if (activeFilters.status && activeFilters.status.length > 0) {
+      matchesFilters = matchesFilters && activeFilters.status.includes(invoice.status);
+    }
+    
+    if (activeFilters.date && activeFilters.date.length > 0) {
+      const invoiceDate = new Date(invoice.date);
+      const today = new Date();
+      const matchesDateFilter = activeFilters.date.some(filter => {
+        if (filter === 'today') {
+          return invoiceDate.toDateString() === today.toDateString();
+        }
+        if (filter === 'thisWeek') {
+          const weekAgo = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);
+          return invoiceDate >= weekAgo;
+        }
+        if (filter === 'thisMonth') {
+          return invoiceDate.getMonth() === today.getMonth() && 
+                 invoiceDate.getFullYear() === today.getFullYear();
+        }
+        if (filter === 'older') {
+          const monthAgo = new Date(today.getFullYear(), today.getMonth(), 1);
+          return invoiceDate < monthAgo;
+        }
+        return true;
+      });
+      matchesFilters = matchesFilters && matchesDateFilter;
+    }
+    
+    if (activeFilters.amount && activeFilters.amount.length > 0) {
+      const total = parseFloat(invoice.total.replace(/[^\d.]/g, ''));
+      const matchesAmountFilter = activeFilters.amount.some(filter => {
+        if (filter === 'low') return total < 10000;
+        if (filter === 'medium') return total >= 10000 && total <= 50000;
+        if (filter === 'high') return total > 50000;
+        return true;
+      });
+      matchesFilters = matchesFilters && matchesAmountFilter;
+    }
+    
+    return matchesSearch && matchesFilters;
+  });
 
   return (
     <div className="space-y-6">
@@ -89,7 +133,7 @@ export default function Invoices() {
             data-testid="input-search-invoices"
           />
         </div>
-        <PageFilter filters={invoiceFilters} />
+        <PageFilter filters={invoiceFilters} onFilterChange={setActiveFilters} />
         <ViewToggle />
       </div>
 
