@@ -1,0 +1,1 @@
+export { getFilterConfig } from './filterConfigs';

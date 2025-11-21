@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "152688204207",
+    "project_id": "arthi-bussiness-software",
+    "storage_bucket": "arthi-bussiness-software.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:152688204207:android:133040297dbe640bca375a",
+        "android_client_info": {
+          "package_name": "com.arhti.system"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "152688204207-0p13oiaqbodcvdgghr00tp9hgkgedm3i.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.arhti.system",
+            "certificate_hash": "8a04a35b7788f4d7eea2dc9106dd131bb035641a"
+          }
+        },
+        {
+          "client_id": "152688204207-dd4elto4q8tmmjrth205tm6ibf8mnoh5.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDsFL27NFvw1I26j0cn3u9GqzqBrPa_meY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "152688204207-dd4elto4q8tmmjrth205tm6ibf8mnoh5.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
